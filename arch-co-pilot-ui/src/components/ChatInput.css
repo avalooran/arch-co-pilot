@@ -2,28 +2,45 @@
     width: 70%;
     max-width: 1000px;
     margin: 0 auto;
-    background-color: #d5d5d5;
-    min-height: 70px;
-    max-height: 120px;
-    /* position: absolute;
-    bottom: 0px; */
+    background-color: #f2f2f2;
+    height: 70px;
     border-radius: 3px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
+    font-family: sans-serif;
     
 }
 textarea {
-    width: 96%;
-    box-sizing: border-box;
+    width: 84%;
+    margin: 0 2%;
     border-radius: 3px;
     border: none;
     outline: none;
-    font-size: 18px;
-    padding: 10px 20px;
+    font-size: 16px;
+    padding: 5px 20px;
     display: block;    
     resize: none;
     overflow: hidden;
     max-height: 80px;
+}
+button {
+    width: 8%;
+    min-width: 70px;
+    margin: 0 2%;
+    height: 35px;
+    border: none;
+    box-shadow: 2px 1px 2px gray;
+    border-radius: 5px;
+    color: white;
+    background: #959595;
+    font-size: 17px;
+    cursor: pointer;
+}
+button.active {
+    background: black;
+}
+button:hover {
+    font-weight: bold;
 }

@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import './ChatInput.css';
 
-function ChatInput() {
+function ChatInput({onSearch}) {
     const [searchText, updateSearchText] = useState("");
-    const [textAreaHeight, updateTextAreaHeight] = useState(50);
-    const onKeyDownFn = (e) => {
-        updateSearchText(e.target.value);
-        updateTextAreaHeight(e.target.scrollHeight);
-      //  e.target.style.height = 'inherit';
-      //  e.target.style.height = `${e.target.scrollHeight}px`; 
+    const [canAsk, updateCanAsk] = useState(false);
+    const onKeyDown = (e) => {
+        if(e.key == "Enter")
+            onAsk();
+    }
+    const onSearchTextChange = (e) => {
+        const input = e.target.value;
+        updateCanAsk(input.trim() != "");
+        updateSearchText(input);
+    }
+    const onAsk = () => {
+        updateSearchText("");
+        onSearch(searchText);
     }
     return (
-        <div className="chat-input" style={{height: (textAreaHeight + 20) + "px"}}>
-            <textArea onKeyDown={onKeyDownFn} style={{height: textAreaHeight + "px"}} value={searchText}/>       
+        <div className="chat-input">
+            <textarea value={searchText} onChange={onSearchTextChange} onKeyDown={onKeyDown}/>       
+            <button className={canAsk ? "active": ""} onClick={onAsk}>Ask &#x2191;</button>
         </div>
     );
 }
