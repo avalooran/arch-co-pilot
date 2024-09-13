@@ -1,0 +1,33 @@
+.chat {
+    box-sizing: border-box;
+    height: calc(100vh - 160px);  
+    overflow: auto; 
+}
+.chat-items-wrapper {
+     /* margin: 0 5%; */
+     padding: 20px 20px;
+     width: 80%;
+     max-width: 1000px;
+     margin: 0 auto;
+     overflow: hidden;
+     margin-bottom: 20px;
+     
+}
+.chat-item {
+    width: 100%;
+    text-align: right;
+    margin: 20px 0px;    
+}
+.chat-item.bot {
+    text-align: left;   
+}
+.chat-msg {
+    display: inline-block;    
+    padding: 10px 20px;
+    border-radius: 1.5rem;
+    background-color: #f4f4f4;   
+}
+
+.chat-item.bot .chat-msg {
+    background-color: #c9c9c9;
+}
