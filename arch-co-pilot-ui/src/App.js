@@ -3,10 +3,10 @@ import { useState, useRef } from 'react';
 import Header from './components/Header';
 import Chat from './components/Chat';
 import ChatInput from './components/ChatInput';
-import { chatItemsMock } from './constants/mock';
+import { isMockEnabled, chatItemsMock, chatResponseFromBot } from './constants/mock';
 
 function App() {
-  const [chatItems, updateChatItems] = useState(chatItemsMock);
+  const [chatItems, updateChatItems] = useState(isMockEnabled ? chatItemsMock: []);
   const chatItemsRef = useRef(chatItems);
   chatItemsRef.current = chatItems;
   const onSearch = (searchText) => {
@@ -14,9 +14,25 @@ function App() {
     updateChatItems([...chatItemsRef.current, {
       message: searchedInput,
       isBot: false
-    }]); 
-    insertBotsResponse("The substring() method of String values returns the part of this string from the start index up to and excluding the end index, or to the end of the string if no end index is supplied.");
-  }  
+    }]);    
+    getResponse(searchedInput);
+  }
+  const getResponse = (searchedInput) => {
+    if(isMockEnabled)
+      insertBotsResponse(chatResponseFromBot);
+    else {
+      fetch('https://4sys05sah2.execute-api.us-east-1.amazonaws.com/devx/questionAnswer', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"headers": {"userID": "Imp"}, "body": {"question": "Who is archi"}})
+      })
+      .then(res => res.json())
+      .then(res => console.log(res));
+    }
+  }
   const insertBotsResponse = (responseMsg) => {
     setTimeout(() => {
       updateChatItems([...chatItemsRef.current, {
@@ -25,7 +41,6 @@ function App() {
       }]);        
     }, 10);
     for(let i=0; i < responseMsg.length; i++) {      
-      const answr = responseMsg.charAt(i);
       setTimeout(() => {
          updateChatItems(chatItemsRef.current.map((x, ind) => {
             if(ind == chatItemsRef.current.length - 1)
