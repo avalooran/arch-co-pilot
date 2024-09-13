@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import './ChatInput.css';
 
-function ChatInput({onSearch}) {
+function ChatInput({onSearch, disableTextArea}) {
     const [searchText, updateSearchText] = useState("");
     const [canAsk, updateCanAsk] = useState(false);
     const onKeyDown = (e) => {
-        if(e.key == "Enter") {
+        if(e.key == "Enter" && !disableTextArea) {
             e.preventDefault();
             onAsk();
             updateSearchText("");
@@ -17,13 +17,15 @@ function ChatInput({onSearch}) {
         updateSearchText(input);
     }
     const onAsk = () => {
-        updateSearchText("");
-        onSearch(searchText);
+        if(!disableTextArea) {
+            updateSearchText("");
+            onSearch(searchText);
+        }
     }
     return (
         <div className="chat-input">
             <textarea value={searchText} onChange={onSearchTextChange} onKeyDown={onKeyDown}/>       
-            <button className={canAsk ? "active": ""} onClick={onAsk}>Ask</button>
+            <button className={canAsk && !disableTextArea ? "active": ""} disabled={!(canAsk && !disableTextArea)} onClick={onAsk}>Ask</button>
         </div>
     );
 }

@@ -3,7 +3,7 @@
     max-width: 1000px;
     margin: 0 auto;
     background-color: #f2f2f2;
-    height: 70px;
+    height: 62px;
     border-radius: 3px;
     display: flex;
     flex-direction: row;
@@ -11,6 +11,7 @@
     justify-content: center;
     font-family: sans-serif;
     box-shadow: 1px 7px 13px #adadad;    
+    margin-bottom: 10px;
 }
 textarea {
     width: 84%;
@@ -36,11 +37,8 @@ button {
     color: white;
     background: #959595;
     font-size: 17px;
-    cursor: pointer;
 }
 button.active {
     background: black;
-}
-button:hover {
-    font-weight: bold;
+    cursor: pointer;
 }

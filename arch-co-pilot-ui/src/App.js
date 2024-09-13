@@ -8,6 +8,7 @@ import { searchApiUrl } from './constants/request';
 
 function App() {
   const [chatItems, updateChatItems] = useState(isMockEnabled ? chatItemsMock: []);
+  const [disableTextArea, updateDisableTextArea] = useState(false);
   const chatItemsRef = useRef(chatItems);
   chatItemsRef.current = chatItems;
   const onSearch = (searchText) => {
@@ -15,10 +16,11 @@ function App() {
     updateChatItems([...chatItemsRef.current, {
       message: searchedInput,
       isBot: false
-    }]);    
+    }]);
     getResponse(searchedInput);
   }
   const getResponse = (searchedInput) => {
+    updateDisableTextArea(true);
     if(isMockEnabled)
       insertBotsResponse(chatResponseFromBot);
     else {
@@ -41,6 +43,7 @@ function App() {
         isBot: true
       }]);        
     }, 10);
+    
     for(let i=0; i < responseMsg.length; i++) {      
       setTimeout(() => {
          updateChatItems(chatItemsRef.current.map((x, ind) => {
@@ -49,6 +52,8 @@ function App() {
             else 
               return x;
         }));
+        if(i == responseMsg.length - 1)
+          updateDisableTextArea(false);
       },1000 + (i * 5));
     }    
   }
@@ -56,7 +61,7 @@ function App() {
     <div className="App">
       <Header />
       <Chat chatItems={chatItems} />
-      <ChatInput onSearch={onSearch}/>
+      <ChatInput onSearch={onSearch} disableTextArea={disableTextArea}/>
     </div>
   );
 }
