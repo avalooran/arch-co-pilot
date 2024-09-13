@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Chat from './components/Chat';
 import ChatInput from './components/ChatInput';
 import { isMockEnabled, chatItemsMock, chatResponseFromBot } from './constants/mock';
+import { searchApiUrl } from './constants/request';
 
 function App() {
   const [chatItems, updateChatItems] = useState(isMockEnabled ? chatItemsMock: []);
@@ -21,7 +22,7 @@ function App() {
     if(isMockEnabled)
       insertBotsResponse(chatResponseFromBot);
     else {
-      fetch('https://4sys05sah2.execute-api.us-east-1.amazonaws.com/devx/questionAnswer', {
+      fetch(searchApiUrl, {
         method: 'POST',
         headers: {
           'Accept': 'application/json, text/plain, */*',
@@ -36,7 +37,7 @@ function App() {
   const insertBotsResponse = (responseMsg) => {
     setTimeout(() => {
       updateChatItems([...chatItemsRef.current, {
-        message: "",
+        message: "...",
         isBot: true
       }]);        
     }, 10);
@@ -48,7 +49,7 @@ function App() {
             else 
               return x;
         }));
-      },1000 + (i * 2));
+      },1000 + (i * 5));
     }    
   }
   return (

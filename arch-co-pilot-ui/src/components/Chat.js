@@ -16,6 +16,15 @@ function Chat({chatItems}) {
             {chatItems.map((x,ind) => {
                 return (
                     <div className={"chat-item " + (x.isBot ? "bot": "")} key={"chatItem-"+ind} ref={ind == chatItems.length - 1 ? messagesEndRef: null}>
+                        {x.isBot ? 
+                            (
+                                <div className="icon">
+                                    <img src="logo192.png" />
+                                </div>
+                            )
+                        :
+                         null
+                        }
                         <div className="chat-msg">{x.message}</div>
                     </div>
                 )

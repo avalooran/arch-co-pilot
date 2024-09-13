@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     font-family: sans-serif;
-    
+    box-shadow: 1px 7px 13px #adadad;    
 }
 textarea {
     width: 84%;

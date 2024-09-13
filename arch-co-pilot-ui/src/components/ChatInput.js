@@ -5,8 +5,11 @@ function ChatInput({onSearch}) {
     const [searchText, updateSearchText] = useState("");
     const [canAsk, updateCanAsk] = useState(false);
     const onKeyDown = (e) => {
-        if(e.key == "Enter")
+        if(e.key == "Enter") {
+            e.preventDefault();
             onAsk();
+            updateSearchText("");
+        }
     }
     const onSearchTextChange = (e) => {
         const input = e.target.value;
@@ -20,7 +23,7 @@ function ChatInput({onSearch}) {
     return (
         <div className="chat-input">
             <textarea value={searchText} onChange={onSearchTextChange} onKeyDown={onKeyDown}/>       
-            <button className={canAsk ? "active": ""} onClick={onAsk}>Ask &#x2191;</button>
+            <button className={canAsk ? "active": ""} onClick={onAsk}>Ask</button>
         </div>
     );
 }

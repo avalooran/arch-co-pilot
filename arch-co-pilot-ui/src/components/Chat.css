@@ -10,16 +10,28 @@
      max-width: 1000px;
      margin: 0 auto;
      overflow: hidden;
-     margin-bottom: 20px;
-     
+     margin-bottom: 20px;     
 }
 .chat-item {
     width: 100%;
     text-align: right;
-    margin: 20px 0px;    
+    margin: 30px 0px;    
 }
 .chat-item.bot {
-    text-align: left;   
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+}
+.chat-item.bot .icon {
+    width: 25px;
+    height: 23px;
+    background: #2b2424;
+    margin-right: 5px;
+    border-radius: 5px;
+}
+.chat-item.bot .icon img {
+    width: 24px;
+    height: 21px;
 }
 .chat-msg {
     display: inline-block;    
