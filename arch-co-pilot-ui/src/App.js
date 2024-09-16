@@ -37,6 +37,8 @@ function App() {
       fetch(searchApiUrl, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           ...requestHeaders
         },
         body: JSON.stringify(requestBody)
