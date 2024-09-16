@@ -21,19 +21,31 @@ function App() {
   }
   const getResponse = (searchedInput) => {
     updateDisableTextArea(true);
-    if(isMockEnabled)
+    if(isMockEnabled) {
       insertBotsResponse(chatResponseFromBot);
-    else {
+    //}else {
+      const requestHeaders = {
+        userId: 'Imp',
+        sessionId: 'SessionId1',
+        eventDatetime: 'sda',
+        conversationTopic: 'architecture'
+      };
+      const requestBody = {
+        "userQuestion": "The question the user is asking",
+        "addHocDocumentPath": "Optional path to a document relevant to the question"
+      };
       fetch(searchApiUrl, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
+          ...requestHeaders
         },
-        body: JSON.stringify({"headers": {"userID": "Imp"}, "body": {"question": "Who is archi"}})
+        body: JSON.stringify(requestBody)
       })
       .then(res => res.json())
-      .then(res => console.log(res));
+      .then(res => console.log(res))
+      .catch((err) => {
+        console.log("Err", err);
+      });        
     }
   }
   const insertBotsResponse = (responseMsg) => {

@@ -1,1 +1,1 @@
-export const searchApiUrl = 'https://4sys05sah2.execute-api.us-east-1.amazonaws.com/devx/questionAnswer';
+export const searchApiUrl = 'https://k4f7arl363.execute-api.us-east-1.amazonaws.com/devx/questionAnswer/';
