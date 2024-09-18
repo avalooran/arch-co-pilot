@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import './Chat.css';
+import { PiAtomFill } from "react-icons/pi";
 
 
-function Chat({chatItems}) {  
+function Chat({ chatItems }) {
     const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -10,28 +11,28 @@ function Chat({chatItems}) {
     useEffect(() => {
         scrollToBottom();
     }, [chatItems]);
-  return (
-    <div className="chat">
-        <div className="chat-items-wrapper">
-            {chatItems.map((x,ind) => {
-                return (
-                    <div className={"chat-item " + (x.isBot ? "bot": "")} key={"chatItem-"+ind} ref={ind == chatItems.length - 1 ? messagesEndRef: null}>
-                        {x.isBot ? 
-                            (
-                                <div className="icon">
-                                    <img src="logo192.png" />
-                                </div>
-                            )
-                        :
-                         null
-                        }
-                        <div className="chat-msg">{x.message}</div>
-                    </div>
-                )
-            })}            
+    return (
+        <div className="chat">
+            <div className="chat-items-wrapper">
+                {chatItems.map((x, ind) => {
+                    return (
+                        <div className={"chat-item " + (x.isBot ? "bot" : "")} key={"chatItem-" + ind} ref={ind == chatItems.length - 1 ? messagesEndRef : null}>
+                            {x.isBot ?
+                                (
+                                    <PiAtomFill
+                                        size={26}
+                                    />
+                                )
+                                :
+                                null
+                            }
+                            <div className="chat-msg">{x.message}</div>
+                        </div>
+                    )
+                })}
+            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default Chat;

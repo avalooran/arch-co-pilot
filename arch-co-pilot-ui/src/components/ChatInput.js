@@ -18,8 +18,9 @@ function ChatInput({onSearch, disableTextArea}) {
     }
     const onAsk = () => {
         if(!disableTextArea) {
-            updateSearchText("");
-            onSearch(searchText);
+            if(searchText.trim() != "")
+                onSearch(searchText);
+            updateSearchText("");            
         }
     }
     return (

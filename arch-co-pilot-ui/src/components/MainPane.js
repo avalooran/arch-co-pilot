@@ -14,7 +14,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
     }
     return (
         <div id="mainpane-wrapper" className="full-vh">
-            <div>
+            <div className="full-vh">
                 <div id="mainpane-header">
                     <div id="app-name">
                         {isSidePaneClose ?
@@ -44,7 +44,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                     <div id="question-suggestion-wrapper">
                         <div id="question-suggestion-icon" style={{width: '10%'}}>
                             <FaStar 
-                                size={30}
+                                size={25}
                                 color={"gray"}
                             />
                         </div>

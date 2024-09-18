@@ -1,6 +1,9 @@
 #chatwindow-wrapper{
     display: flex;
     flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;    
 }
 #chat-header {
     display: flex;
@@ -10,17 +13,23 @@
     padding: 0px 20px;
     background-color: #e3e3e3;
     cursor: pointer;
+    flex-shrink: 0;
 }
 #chat-header > div {
     margin-right: 20px;
 }
 #chat-body {
-    width: 100%;
-    flex: 1 1 0;
+    width: 100%;    
+    flex: 1;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    overflow: auto;
+    min-height: 0;
 }
+
 #chat-footer {
     width: 100%;
     height: 70px;
+    flex-shrink: 0;
 }
