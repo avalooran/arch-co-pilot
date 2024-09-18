@@ -1,22 +1,19 @@
 import './SidePane.css';
-import { useState } from 'react';
 import { TbWindowMinimize } from "react-icons/tb";
 
-function SidePane({isSidePaneClose, toggleSidePaneClose}) {
-    const [isOnHover, updateIsOnHover] = useState(false);    
+function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
     return (
-        <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose? "close": ""}`}>
+        <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose ? "close" : "open"}`}>
             <div id="sidepane-header">
                 <div>
-                    <TbWindowMinimize 
+                    <TbWindowMinimize
+                        key={"sidePane-minmize" + Date.now()}
                         size={32}
-                        color={isOnHover? "black": "gray"}
-                        style={{cursor: 'pointer'}}
-                        onMouseOver={()=> updateIsOnHover(true)}
-                        onMouseOut={() => updateIsOnHover(false)}
+                        color={"gray"}
+                        style={{ cursor: 'pointer' }}
                         onClick={toggleSidePaneClose}
                     />
-                    </div>
+                </div>
             </div>
         </div>
     )

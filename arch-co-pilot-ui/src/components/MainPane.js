@@ -1,27 +1,25 @@
-import { useState } from 'react';
 import { APP_MENU, APP_NAME } from '../constants/app';
 import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
 import { TbWindowMinimize } from "react-icons/tb";
 import './MainPane.css';
 
-function MainPane({isSidePaneClose, toggleSidePaneClose}) {
-    const [isOnHover, updateIsOnHover] = useState(false); 
+function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
     return (
         <div id="mainpane-wrapper" className="full-vh">
             <div>
                 <div id="mainpane-header">
-                    {isSidePaneClose ? 
-                        <TbWindowMinimize 
-                        size={32}
-                        color={isOnHover? "black": "gray"}
-                        style={{cursor: 'pointer'}}
-                        onMouseOver={()=> updateIsOnHover(true)}
-                        onMouseOut={() => updateIsOnHover(false)}
-                        onClick={toggleSidePaneClose}
-                    />
-                    : null}
                     <div id="app-name">
+                        {isSidePaneClose ?
+                            <TbWindowMinimize
+                                size={32}
+                                color={"gray"}
+                                style={{ cursor: 'pointer' }}
+                                onClick={toggleSidePaneClose}
+                            />
+                            :
+                            null
+                        }
                         <span>{APP_NAME}</span>
                     </div>
                     <div id="app-menu">
@@ -44,7 +42,7 @@ function MainPane({isSidePaneClose, toggleSidePaneClose}) {
                     </div>
                 </div>
                 <div id="mainpane-chatwindow">
-                   <ChatWindow />
+                    <ChatWindow />
                 </div>
             </div>
         </div>
