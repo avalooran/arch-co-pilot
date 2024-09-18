@@ -1,5 +1,21 @@
 #sidepane-wrapper {
     width: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: 100%;
     background-color: #fbfbfb;
+}
+#sidepane-wrapper.close{
+    width: 0px;
+    visibility: hidden;
+}
+#sidepane-header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 60px;
+    padding: 0px 20px;
+    box-sizing: border-box;
 }

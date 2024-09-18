@@ -1,0 +1,13 @@
+#chatwindow-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+#chat-header {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 50px;
+    padding: 0px 20px;
+    background-color: #e3e3e3;
+    cursor: pointer;
+}
