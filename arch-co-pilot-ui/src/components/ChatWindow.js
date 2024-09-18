@@ -2,6 +2,7 @@ import './ChatWindow.css';
 import { RiChatNewLine } from "react-icons/ri";
 import { FaArrowsUpToLine } from "react-icons/fa6";
 import { BsFillQuestionSquareFill } from "react-icons/bs";
+import { FaStarHalf } from "react-icons/fa";
 
 function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
     return (
@@ -17,7 +18,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                     </div>
                     :
                     <div>
-                        <BsFillQuestionSquareFill
+                        <FaStarHalf
                             size={30}
                             color={"gray"}
                             onClick={toggleSubHeaderOpen}

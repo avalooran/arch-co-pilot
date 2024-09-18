@@ -2,7 +2,7 @@ import { APP_MENU, APP_NAME } from '../constants/app';
 import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
 import { TbWindowMinimize } from "react-icons/tb";
-import { BsFillQuestionSquareFill } from "react-icons/bs";
+import { FaStar } from "react-icons/fa";
 import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
 import { useState } from 'react';
@@ -43,7 +43,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                 <div id="mainpane-subheader" className={`${isSubHeaderOpen ? 'open' : 'close'}`}>
                     <div id="question-suggestion-wrapper">
                         <div id="question-suggestion-icon" style={{width: '10%'}}>
-                            <BsFillQuestionSquareFill
+                            <FaStar 
                                 size={30}
                                 color={"gray"}
                             />
