@@ -11,3 +11,16 @@
     background-color: #e3e3e3;
     cursor: pointer;
 }
+#chat-header > div {
+    margin-right: 20px;
+}
+#chat-body {
+    width: 100%;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+#chat-footer {
+    width: 100%;
+    height: 70px;
+}

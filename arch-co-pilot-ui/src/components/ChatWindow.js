@@ -1,15 +1,43 @@
 import './ChatWindow.css';
 import { RiChatNewLine } from "react-icons/ri";
+import { FaArrowsUpToLine } from "react-icons/fa6";
+import { BsFillQuestionSquareFill } from "react-icons/bs";
 
-
-function ChatWindow() {
+function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
     return (
         <div id="chatwindow-wrapper">
             <div id="chat-header">
-                <RiChatNewLine size={27} color={"gray"} />
+                {isSubHeaderOpen ?
+                    <div>
+                        <FaArrowsUpToLine
+                            size={27}
+                            color={"gray"}
+                            onClick={toggleSubHeaderOpen}
+                        />
+                    </div>
+                    :
+                    <div>
+                        <BsFillQuestionSquareFill
+                            size={30}
+                            color={"gray"}
+                            onClick={toggleSubHeaderOpen}
+                        />
+                    </div>
+                }
+                <div>
+                    <RiChatNewLine
+                        size={27}
+                        color={"gray"}
+
+                    />
+                </div>
             </div>
-            <div id="chat-body"></div>
-            <div id="chat-footer"></div>
+            <div id="chat-body">
+                <div></div>
+            </div>
+            <div id="chat-footer">
+
+            </div>
         </div>
     )
 }

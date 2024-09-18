@@ -70,7 +70,7 @@ export const prevTopic = [
         period: "Yesterday",
         topic: [
             {
-                topic: "Explain how to use batch pattern dfsdfsdfsfsfssssssssssssssssssssssssssssssssssssssssssssss",
+                topic: "Explain how to use batch pattern",
                 link: ""
             }
         ]

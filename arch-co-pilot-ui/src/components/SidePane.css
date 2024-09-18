@@ -4,10 +4,12 @@
     align-items: center;
     height: 100%;
     background-color: #fbfbfb;
+    transition: width 0.5s;
 }
 #sidepane-wrapper.open {
-    min-width: 300px;
-    max-width: 350px;
+    width: 350px;
+    /* max-width: 350px;
+    min-width: 350px; */
 }
 #sidepane-wrapper.close{
     width: 0px;

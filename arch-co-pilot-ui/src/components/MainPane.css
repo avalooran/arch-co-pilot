@@ -22,7 +22,7 @@
     font-family: serif;    
 }
 #app-name > span {
-    margin-left: 20px;
+    margin: 0px 5px 0px 25px;
 }
 #app-menu {
     display: flex;
@@ -42,24 +42,45 @@
 }
 #mainpane-subheader {
     display: flex;
-    flex-direction: column;
-    flex: 1;
+    flex-direction: column;    
+    transition: height 0.5s;
+    width: 100%;
+    box-sizing: border-box;
+}
+#mainpane-subheader.open {
+    height: 170px;
+}
+#mainpane-subheader.close {
+    height: 0px;;
 }
 #question-suggestion-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px 20px;
+    box-sizing: border-box;
+    height: 100%;
 }
 #question-suggestion-wrapper > div {
     display: flex;
-    justify-content: space-between;    
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100%; 
+}
+#question-suggestion-icon {
+    width: 10%;
+}
+#question-suggestions {
+    width: 90%;
 }
 #question-suggestion-wrapper > div > div {
     display: flex;
+    justify-content: center;
     align-items: center;
-    width: 160px;
-    height: 100px;
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
     border-radius: 5px;
     padding: 10px;
     margin-right: 20px;
@@ -70,10 +91,10 @@
     color: #414141;
     box-shadow: 1px 1px 9px #e1e1e1;
     text-align: center;    
-    cursor: pointer;
 }
 #question-suggestion-wrapper > div > div:hover {
     background-color: #dfdfdf;
+    cursor: pointer;
 }
 #question-suggestion-icon {
     padding-right: 20px;

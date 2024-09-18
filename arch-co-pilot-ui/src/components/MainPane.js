@@ -3,9 +3,15 @@ import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
 import { TbWindowMinimize } from "react-icons/tb";
 import { BsFillQuestionSquareFill } from "react-icons/bs";
+import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
+import { useState } from 'react';
 
 function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
+    const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(true);
+    const toggleSubHeaderOpen = () => {
+        updateIsSubHeaderOpen(!isSubHeaderOpen);
+    }
     return (
         <div id="mainpane-wrapper" className="full-vh">
             <div>
@@ -22,6 +28,9 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                             null
                         }
                         <span>{APP_NAME}</span>
+                        <PiAtomFill
+                            size={26}
+                        />
                     </div>
                     <div id="app-menu">
                         {APP_MENU.map((x, ind) => (
@@ -31,25 +40,26 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                         ))}
                     </div>
                 </div>
-                <div id="mainpane-subheader">
+                <div id="mainpane-subheader" className={`${isSubHeaderOpen ? 'open' : 'close'}`}>
                     <div id="question-suggestion-wrapper">
-                        <div id="question-suggestion-icon">
+                        <div id="question-suggestion-icon" style={{width: '10%'}}>
                             <BsFillQuestionSquareFill
                                 size={30}
                                 color={"gray"}
                             />
                         </div>
-                        <div>
+                        <div id="question-suggestions" >
                             {questionSuggestions.map((x, ind) => (
                                 <div key={`question-suggestion-${ind}`}>
                                     {x.topic}
                                 </div>
                             ))}
                         </div>
+                        {/* <div style={{height: '100px', width: '100%', background: 'green'}}></div> */}
                     </div>
                 </div>
                 <div id="mainpane-chatwindow">
-                    <ChatWindow />
+                    <ChatWindow isSubHeaderOpen={isSubHeaderOpen} toggleSubHeaderOpen={toggleSubHeaderOpen} />
                 </div>
             </div>
         </div>
