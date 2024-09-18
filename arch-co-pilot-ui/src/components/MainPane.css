@@ -75,3 +75,6 @@
 #question-suggestion-wrapper > div > div:hover {
     background-color: #dfdfdf;
 }
+#question-suggestion-icon {
+    padding-right: 20px;
+}

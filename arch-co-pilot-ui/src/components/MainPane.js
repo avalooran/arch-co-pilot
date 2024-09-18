@@ -2,6 +2,7 @@ import { APP_MENU, APP_NAME } from '../constants/app';
 import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
 import { TbWindowMinimize } from "react-icons/tb";
+import { BsFillQuestionSquareFill } from "react-icons/bs";
 import './MainPane.css';
 
 function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
@@ -32,6 +33,12 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                 </div>
                 <div id="mainpane-subheader">
                     <div id="question-suggestion-wrapper">
+                        <div id="question-suggestion-icon">
+                            <BsFillQuestionSquareFill
+                                size={30}
+                                color={"gray"}
+                            />
+                        </div>
                         <div>
                             {questionSuggestions.map((x, ind) => (
                                 <div key={`question-suggestion-${ind}`}>

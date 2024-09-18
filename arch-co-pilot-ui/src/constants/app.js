@@ -7,9 +7,5 @@ export const APP_MENU = [
     {
         "label": "Meet the team",
         "link": "/meetTheTeam"
-    },
-    {
-        "label": "About us",
-        "link": "/aboutUs"
     }
 ];

@@ -50,4 +50,29 @@ export const questionSuggestions = [
         link: ""
     }
     
-]
+];
+
+export const prevTopic = [
+    {
+        period: "Today",
+        topic: [
+            {
+                topic: "Explain Reference Architecture for CTM",
+                link: ""
+            },
+            {
+                topic: "Walk me through ARB decision tree",
+                link: ""
+            }
+        ]
+    },
+    {
+        period: "Yesterday",
+        topic: [
+            {
+                topic: "Explain how to use batch pattern dfsdfsdfsfsfssssssssssssssssssssssssssssssssssssssssssssss",
+                link: ""
+            }
+        ]
+    }
+];
