@@ -1,4 +1,4 @@
-export const isMockEnabled = true;
+export const isMockEnabled = false;
 export const chatItemsMock = [
     {
         message: "What is Artificial Intelligence",
@@ -25,3 +25,29 @@ Applications: It’s used in chatbots, virtual assistants, customer support, edu
 Limitations: While it’s quite powerful, it’s not perfect. It may occasionally produce incorrect or nonsensical answers and lacks personal experiences or emotions. Its responses are based on patterns in the data it was trained on rather than personal knowledge or understanding.
 
 Overall, ChatGPT is designed to be a versatile and helpful tool for interacting with language and information.`;
+
+
+export const questionSuggestions = [
+    {
+        topic: "Explain Reference Architecture for CTM",
+        link: ""
+    },
+    {
+        topic: "Provide Tech Debt list for OCM",
+        link: ""
+    },
+    {
+        topic: "Explain how to use batch pattern",
+        link: ""
+    },
+    {
+        topic: "What are the NFRs we should consider for Tier-1 app for AWS deployment",
+        link: ""
+    },
+    ,
+    {
+        topic: "Walk me through ARB decision tree",
+        link: ""
+    }
+    
+]

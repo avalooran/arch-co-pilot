@@ -23,26 +23,21 @@ function App() {
     updateDisableTextArea(true);
     if(isMockEnabled) {
       insertBotsResponse(chatResponseFromBot);
-    //}else {
-      const requestHeaders = {
+    }
+    else {
+      const headers = {
         userId: 'Imp',
         sessionId: 'SessionId1',
-        eventDatetime: 'sda',
-        conversationTopic: 'architecture'
+        eventDatetime: new Date(),
+        conversationTopic: 'architecture',
+        "Content-Type": "application/json",
+        "mode": "cors"
       };
       const requestBody = {
         "userQuestion": "The question the user is asking",
         "addHocDocumentPath": "Optional path to a document relevant to the question"
       };
-      fetch(searchApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...requestHeaders
-        },
-        body: JSON.stringify(requestBody)
-      })
+      fetch(searchApiUrl, { method: 'POST', headers, body: JSON.stringify(requestBody) })
       .then(res => res.json())
       .then(res => console.log(res))
       .catch((err) => {
