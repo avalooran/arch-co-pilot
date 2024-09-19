@@ -12,4 +12,5 @@ code {
 }
 .full-vh {
   height: 100vh;
+  overflow: hidden;
 }

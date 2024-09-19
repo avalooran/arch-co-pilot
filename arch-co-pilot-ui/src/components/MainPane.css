@@ -1,5 +1,5 @@
 #mainpane-wrapper {
-    flex: auto;    
+    flex: auto;
 }
 #mainpane-wrapper > div {
     display: flex;
