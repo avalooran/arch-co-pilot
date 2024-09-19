@@ -3,7 +3,6 @@
     max-width: 1000px;
     margin: 0 auto;
     background-color: #f2f2f2;
-    height: 62px;
     border-radius: 3px;
     display: flex;
     flex-direction: row;
@@ -12,8 +11,11 @@
     font-family: sans-serif;
     box-shadow: 1px 7px 13px #adadad;
     margin-bottom: 10px;
+    padding: 10px 20px;
 }
-
+.chat-input > div {
+    cursor: pointer;
+}
 textarea {
     width: 84%;
     margin: 0 2%;
