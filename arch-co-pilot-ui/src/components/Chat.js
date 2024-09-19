@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { PiAtomFill } from "react-icons/pi";
+import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
 
 function Chat({ chatItems }) {
@@ -28,7 +29,19 @@ function Chat({ chatItems }) {
                                 :
                                 null
                             }
-                            <div className="chat-msg">{x.message}</div>
+                            <div className="chat-msg">
+                                <div>{x.message}</div>
+                                {x?.uploadDoc?.name &&
+                                    <div className="uploaded-file" title={`File - ${x.uploadDoc.name} (Size - ${x.uploadDoc.size})`}>
+                                        <div>
+                                            <CiFileOn />
+                                        </div>
+                                        <div>
+                                            {x.uploadDoc.name}
+                                        </div>
+
+                                    </div>}
+                            </div>
                         </div>
                     )
                 })}

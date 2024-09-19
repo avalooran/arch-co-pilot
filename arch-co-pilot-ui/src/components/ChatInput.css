@@ -16,6 +16,9 @@
 .chat-input > div {
     cursor: pointer;
 }
+.chat-input input {
+    display: none;
+}
 textarea {
     width: 84%;
     margin: 0 2%;

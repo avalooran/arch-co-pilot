@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './ChatInput.css';
 import { BsFillSendFill } from "react-icons/bs";
 import { FaFileImage } from "react-icons/fa";
@@ -6,6 +6,8 @@ import { FaFileImage } from "react-icons/fa";
 function ChatInput({ onSearch, disableTextArea }) {
     const [searchText, updateSearchText] = useState("");
     const [canAsk, updateCanAsk] = useState(false);
+    const [selectedFile, updateSelectedFile] = useState(null);
+    const fileUploadRef = useRef(null);
     const onKeyDown = (e) => {
         if (e.key === "Enter" && !disableTextArea) {
             e.preventDefault();
@@ -20,22 +22,34 @@ function ChatInput({ onSearch, disableTextArea }) {
     }
     const onAsk = () => {
         if (!disableTextArea) {
-            if (searchText.trim() !== "")
-                onSearch(searchText);
+            if (searchText.trim() !== "") {
+                updateSelectedFile(null);
+                fileUploadRef.current.value = "";
+                onSearch(searchText, selectedFile);
+            }
             updateSearchText("");
         }
     }
+    const onFileChange = (event) => {
+        updateSelectedFile(event.target.files[0]);
+    };
     return (
         <div className="chat-input">
-            <div>
+            <div title={selectedFile?.name && selectedFile?.size ? `File - ${selectedFile.name} (Size - ${selectedFile.size})`: ""}>
+            <input type="file" ref={fileUploadRef} onChange={onFileChange} />
                 <FaFileImage
                     size={30}
                     style={{
-                        ...(!(canAsk && !disableTextArea) && {
+                        ...(!(canAsk && !disableTextArea) && false && {
                             cursor: "not-allowed",
                             fill: "gray"
+                        }),
+                        ...(selectedFile && {
+                            fill: "green"
                         })
+                        
                     }}
+                    onClick={() => {fileUploadRef.current.click()}}
                 />
             </div>
             <textarea value={searchText} onChange={onSearchTextChange} onKeyDown={onKeyDown} />

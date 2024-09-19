@@ -12,15 +12,21 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
     const [disableTextArea, updateDisableTextArea] = useState(false);
     const chatItemsRef = useRef(chatItems);
     chatItemsRef.current = chatItems;
-    const onSearch = (searchText) => {
+    const onSearch = (searchText, uploadedFile) => {
         const searchedInput = searchText.trim();
         updateChatItems([...chatItemsRef.current, {
             message: searchedInput,
+            uploadDoc: uploadedFile,
             isBot: false
         }]);
-        getResponse(searchedInput);
+        if(uploadedFile) {
+            // To Integrate with API that saves file in S3 and returns the S3 link
+            getResponse(searchedInput, "YetToIntegrateS3FileUploadService")
+        }
+        else
+            getResponse(searchedInput, "");
     }
-    const getResponse = (searchedInput) => {
+    const getResponse = (userQuestion, addHocDocumentPath) => {
         updateDisableTextArea(true);
         const headers = {
             userid: 'TestUserId',
@@ -30,13 +36,12 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
             "Content-Type": "application/json"
         };
         const requestBody = {
-            "userQuestion": searchedInput,
-            "addHocDocumentPath": ""
+            userQuestion,
+            addHocDocumentPath
         };
         fetch(searchApiUrl, { method: 'POST', headers, body: JSON.stringify(requestBody) })
             .then(res => res.json())
             .then(res => {
-                console.log(res);
                 insertBotsResponse(res.answer);
             })
             .catch((err) => {
