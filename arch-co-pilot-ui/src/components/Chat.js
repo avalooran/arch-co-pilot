@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
-import './Chat.css';
 import { PiAtomFill } from "react-icons/pi";
-
+import './Chat.css';
 
 function Chat({ chatItems }) {
     const messagesEndRef = useRef(null);
@@ -21,10 +20,10 @@ function Chat({ chatItems }) {
                                 (
                                     <div>
                                         <PiAtomFill
-                                        size={25}
-                                        color={"#0E5447"}
+                                            size={25}
+                                            color={"#0E5447"}
                                         />
-                                    </div>  
+                                    </div>
                                 )
                                 :
                                 null

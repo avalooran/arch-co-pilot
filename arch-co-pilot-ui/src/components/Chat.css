@@ -1,50 +1,57 @@
 .chat {
-    box-sizing: border-box;    
+    box-sizing: border-box;
 }
+
 .chat-items-wrapper {
-     /* margin: 0 5%; */
-     padding: 20px 20px;
-     width: 80%;
-     margin: 0 auto;
-     overflow: hidden;
-     margin-bottom: 20px;     
+    /* margin: 0 5%; */
+    padding: 20px 20px;
+    width: 80%;
+    margin: 0 auto;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
+
 .chat-item {
     width: 100%;
     text-align: right;
-    margin: 30px 0px;    
+    margin: 30px 0px;
 }
+
 .chat-item.bot {
     display: flex;
     flex-direction: row;
     text-align: left;
 }
+
 .chat-item.bot .icon {
     width: 25px;
     height: 23px;
     background: #2b2424;
     margin-right: 5px;
-    border-radius: 5px;    
+    border-radius: 5px;
 }
+
 .chat-item.bot .icon img {
     width: 24px;
     height: 21px;
     flex-shrink: 0;
 }
+
 .chat-msg {
-    display: inline-block; 
-    margin-left: 20px;  
+    display: inline-block;
+    margin-left: 20px;
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #F5EAD9 ;/* #147efb; #4e813a; #53d769*/
+    background-color: #F5EAD9;
     color: black;
     word-break: break-word;
     white-space: pre-wrap;
     text-align: left;
     font-family: Calibri;
 }
+
 .chat-item.bot .chat-msg {
-    background-color: #B8E0D5;/* #30b0c7; #f4f4f4; */
+    background-color: #B8E0D5;
     color: black;
     font-family: Calibri;
 }

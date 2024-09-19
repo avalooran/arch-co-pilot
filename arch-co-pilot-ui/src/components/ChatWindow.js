@@ -1,11 +1,10 @@
-import './ChatWindow.css';
-
+import { useRef, useState } from 'react';
 import { RiChatNewLine } from "react-icons/ri";
 import { FaArrowsUpToLine } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
+import './ChatWindow.css';
 import ChatInput from './ChatInput';
 import Chat from './Chat';
-import { useRef, useState } from 'react';
 import { searchApiUrl } from '../constants/request';
 
 function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
@@ -39,7 +38,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
             .then(res => {
                 console.log(res);
                 insertBotsResponse(res.answer);
-        })
+            })
             .catch((err) => {
                 console.log("Err", err);
             });

@@ -10,9 +10,10 @@
     align-items: center;
     justify-content: center;
     font-family: sans-serif;
-    box-shadow: 1px 7px 13px #adadad;    
+    box-shadow: 1px 7px 13px #adadad;
     margin-bottom: 10px;
 }
+
 textarea {
     width: 84%;
     margin: 0 2%;
@@ -21,12 +22,13 @@ textarea {
     outline: none;
     font-size: 16px;
     padding: 5px 20px;
-    display: block;    
+    display: block;
     resize: none;
     overflow: hidden;
     max-height: 80px;
     font-family: Calibri;
 }
+
 button {
     width: 8%;
     min-width: 70px;
@@ -39,6 +41,7 @@ button {
     background: #959595;
     font-size: 17px;
 }
+
 button.active {
     background: black;
     cursor: pointer;

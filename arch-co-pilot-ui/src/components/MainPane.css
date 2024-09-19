@@ -1,10 +1,12 @@
 #mainpane-wrapper {
     flex: auto;
 }
-#mainpane-wrapper > div {
+
+#mainpane-wrapper>div {
     display: flex;
     flex-direction: column;
 }
+
 #mainpane-header {
     display: flex;
     justify-content: space-between;
@@ -15,22 +17,26 @@
     flex-shrink: 0;
     background-color: #0E5447;
 }
+
 #app-name {
     display: flex;
     align-items: center;
     color: white;
     font-weight: 500;
     font-size: 20px;
-    font-family: Calibri;    
+    font-family: Calibri;
 }
-#app-name > span {
+
+#app-name>span {
     margin: 0px 5px 0px 25px;
 }
+
 #app-menu {
     display: flex;
-    justify-content: flex-end;    
+    justify-content: flex-end;
 }
-#app-menu > div {
+
+#app-menu>div {
     margin: 0px 10px;
     font-family: Calibri;
     font-size: 14px;
@@ -38,23 +44,29 @@
     cursor: pointer;
     color: white;
 }
-#app-menu > div:hover {
+
+#app-menu>div:hover {
     text-decoration: underline;
 }
+
 #mainpane-subheader {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     transition: height 0.5s;
     width: 100%;
     box-sizing: border-box;
     flex-shrink: 0;
 }
+
 #mainpane-subheader.open {
     height: 170px;
 }
+
 #mainpane-subheader.close {
-    height: 0px;;
+    height: 0px;
+    ;
 }
+
 #question-suggestion-wrapper {
     display: flex;
     justify-content: center;
@@ -63,20 +75,24 @@
     box-sizing: border-box;
     height: 100%;
 }
-#question-suggestion-wrapper > div {
+
+#question-suggestion-wrapper>div {
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
-    height: 100%; 
+    height: 100%;
 }
+
 #question-suggestion-icon {
     width: 10%;
 }
+
 #question-suggestions {
     width: 90%;
 }
-#question-suggestion-wrapper > div > div {
+
+#question-suggestion-wrapper>div>div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -95,13 +111,16 @@
     text-align: center;
     background-color: #FBF9F4;
 }
-#question-suggestion-wrapper > div > div:hover {
+
+#question-suggestion-wrapper>div>div:hover {
     background-color: #F5EAD9;
     cursor: pointer;
 }
+
 #question-suggestion-icon {
     padding-right: 20px;
 }
+
 #mainpane-chatwindow {
     display: flex;
     flex-direction: column;

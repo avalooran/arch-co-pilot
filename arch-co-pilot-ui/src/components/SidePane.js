@@ -1,9 +1,8 @@
-import './SidePane.css';
 import { TbWindowMinimize } from "react-icons/tb";
 import { MdOutlineTopic } from "react-icons/md";
-import { BsQuestionSquare } from "react-icons/bs";
-import { prevTopic } from '../constants/mock';
 import { CiTimer } from "react-icons/ci";
+import './SidePane.css';
+import { prevTopic } from '../constants/mock';
 
 function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
     return (
@@ -21,17 +20,17 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
             <div id="sidepane-body">
                 <div id="prev-topic-wrapper">
                     <div id="prev-topic-header">
-                            <div>
-                                <MdOutlineTopic 
-                                    size={26}
-                                    color={"gray"}
-                                />
-                            </div>
-                            <div>Topics</div>
+                        <div>
+                            <MdOutlineTopic
+                                size={26}
+                                color={"gray"}
+                            />
+                        </div>
+                        <div>Topics</div>
                     </div>
                     <div id="prev-topic-body">
                         <div>
-                        {prevTopic.map((x, ind) => {
+                            {prevTopic.map((x, ind) => {
                                 return (
                                     <div key={"prev-topic-period-wrapper" + ind}>
                                         <div className="prev-topic-period">
@@ -40,7 +39,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
                                         </div>
                                         {x.topic.map((y, index) => (
                                             <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index}>
-                                                <div>{y.topic}</div> 
+                                                <div>{y.topic}</div>
                                             </div>
                                         ))}
                                     </div>

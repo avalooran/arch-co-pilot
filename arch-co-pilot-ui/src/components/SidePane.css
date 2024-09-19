@@ -7,15 +7,16 @@
     transition: width 0.5s;
     flex-shrink: 0;
 }
+
 #sidepane-wrapper.open {
     width: 400px;
-    /* max-width: 350px;
-    min-width: 350px; */
 }
-#sidepane-wrapper.close{
+
+#sidepane-wrapper.close {
     width: 0px;
     visibility: hidden;
 }
+
 #sidepane-header {
     width: 100%;
     display: flex;
@@ -27,6 +28,7 @@
     flex-shrink: 0;
     background-color: #FFA700;
 }
+
 #sidepane-body {
     width: 100%;
     flex: 1;
@@ -34,6 +36,7 @@
     box-sizing: border-box;
     background-color: #F5EAD9;
 }
+
 #prev-topic-header {
     display: flex;
     justify-content: flex-start;
@@ -41,54 +44,64 @@
     font-size: 25px;
     padding-bottom: 10px;
 }
-#prev-topic-header > div {
+
+#prev-topic-header>div {
     padding-left: 10px;
-    color: gray;    
+    color: gray;
 }
-#prev-topic-header > div:first-child {
+
+#prev-topic-header>div:first-child {
     padding-top: 7px;
 }
+
 #prev-topic-body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;   
+    box-sizing: border-box;
     padding: 0px 10px 0 20px;
-    overflow: hidden;    
+    overflow: hidden;
 }
-#prev-topic-body > div {
+
+#prev-topic-body>div {
     overflow-y: auto;
     height: 100%;
 }
-.prev-topic-period{
+
+.prev-topic-period {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     padding: 10px 0px;
     font-size: 22px;
 }
-.prev-topic-period > div {
+
+.prev-topic-period>div {
     padding-left: 10px;
 }
-.prev-topic-period-topic{
+
+.prev-topic-period-topic {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     box-sizing: border-box;
     width: 100%;
     padding: 10px 0px 10px 10px;
-    
+
 }
-.prev-topic-period-topic > div {
+
+.prev-topic-period-topic>div {
     width: 100%;
     padding-left: 10px;
     font-style: italic;
     font-size: 15px;
-    overflow: hidden;    
+    overflow: hidden;
 }
+
 .prev-topic-period-topic:hover {
     background-color: #c5c5c5;
 }
+
 #sidepane-footer {
     width: 100%;
     display: flex;
@@ -99,6 +112,7 @@
     color: gray;
     background-color: #F5EAD9;
 }
+
 #sidepane-footer:hover {
     text-decoration: underline;
     cursor: pointer;
