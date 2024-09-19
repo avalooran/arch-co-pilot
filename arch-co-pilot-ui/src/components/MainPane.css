@@ -13,14 +13,15 @@
     padding: 0px 20px;
     box-shadow: 1px 2px 1px #f2f2f2;
     flex-shrink: 0;
+    background-color: #0E5447;
 }
 #app-name {
     display: flex;
     align-items: center;
-    color: gray;
+    color: white;
     font-weight: 500;
     font-size: 20px;
-    font-family: serif;    
+    font-family: Calibri;    
 }
 #app-name > span {
     margin: 0px 5px 0px 25px;
@@ -32,13 +33,12 @@
 #app-menu > div {
     margin: 0px 10px;
     font-family: Calibri;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    color: gray;
+    color: white;
 }
 #app-menu > div:hover {
-    color: #817d7d;
     text-decoration: underline;
 }
 #mainpane-subheader {
@@ -92,10 +92,11 @@
     overflow: hidden;
     color: #414141;
     box-shadow: 1px 1px 9px #e1e1e1;
-    text-align: center;    
+    text-align: center;
+    background-color: #FBF9F4;
 }
 #question-suggestion-wrapper > div > div:hover {
-    background-color: #dfdfdf;
+    background-color: #F5EAD9;
     cursor: pointer;
 }
 #question-suggestion-icon {
@@ -107,4 +108,5 @@
     width: 100%;
     height: 100%;
     flex: 1;
+    overflow: hidden;
 }

@@ -25,6 +25,7 @@ textarea {
     resize: none;
     overflow: hidden;
     max-height: 80px;
+    font-family: Calibri;
 }
 button {
     width: 8%;

@@ -1,14 +1,14 @@
 import { APP_MENU, APP_NAME } from '../constants/app';
 import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
-import { TbWindowMinimize } from "react-icons/tb";
+import { TbWindowMaximize } from "react-icons/tb";
 import { FaStar } from "react-icons/fa";
 import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
 import { useState } from 'react';
 
 function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
-    const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(true);
+    const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
     }
@@ -18,9 +18,9 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                 <div id="mainpane-header">
                     <div id="app-name">
                         {isSidePaneClose ?
-                            <TbWindowMinimize
+                            <TbWindowMaximize
                                 size={32}
-                                color={"gray"}
+                                color={"white"}
                                 style={{ cursor: 'pointer' }}
                                 onClick={toggleSidePaneClose}
                             />
@@ -45,7 +45,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                         <div id="question-suggestion-icon" style={{width: '10%'}}>
                             <FaStar 
                                 size={25}
-                                color={"gray"}
+                                color={"black"}
                             />
                         </div>
                         <div id="question-suggestions" >

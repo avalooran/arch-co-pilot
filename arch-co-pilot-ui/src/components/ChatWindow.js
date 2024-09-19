@@ -73,7 +73,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                     <div>
                         <FaArrowsUpToLine
                             size={25}
-                            color={"gray"}
+                            color={"black"}
                             onClick={toggleSubHeaderOpen}
                         />
                     </div>
@@ -81,7 +81,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                     <div>
                         <CiStar
                             size={30}
-                            color={"gray"}
+                            color={"black"}
                             onClick={toggleSubHeaderOpen}
                         />
                     </div>
@@ -89,7 +89,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                 <div>
                     <RiChatNewLine
                         size={25}
-                        color={"gray"}
+                        color={"black"}
                         onClick={() => updateChatItems([])}
                     />
                 </div>

@@ -12,7 +12,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
                 <div>
                     <TbWindowMinimize
                         size={32}
-                        color={"gray"}
+                        color={"black"}
                         style={{ cursor: 'pointer' }}
                         onClick={toggleSidePaneClose}
                     />
@@ -21,10 +21,12 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
             <div id="sidepane-body">
                 <div id="prev-topic-wrapper">
                     <div id="prev-topic-header">
-                            <MdOutlineTopic 
-                                size={26}
-                                color={"gray"}
-                            />
+                            <div>
+                                <MdOutlineTopic 
+                                    size={26}
+                                    color={"gray"}
+                                />
+                            </div>
                             <div>Topics</div>
                     </div>
                     <div id="prev-topic-body">
@@ -49,7 +51,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
                 </div>
             </div>
             <div id="sidepane-footer">
-                About us
+                Meet the team
             </div>
         </div>
     )

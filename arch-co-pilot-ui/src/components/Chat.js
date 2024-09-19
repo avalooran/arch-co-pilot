@@ -19,9 +19,12 @@ function Chat({ chatItems }) {
                         <div className={"chat-item " + (x.isBot ? "bot" : "")} key={"chatItem-" + ind} ref={ind == chatItems.length - 1 ? messagesEndRef : null}>
                             {x.isBot ?
                                 (
-                                    <PiAtomFill
-                                        size={26}
-                                    />
+                                    <div>
+                                        <PiAtomFill
+                                        size={25}
+                                        color={"#0E5447"}
+                                        />
+                                    </div>
                                 )
                                 :
                                 null
