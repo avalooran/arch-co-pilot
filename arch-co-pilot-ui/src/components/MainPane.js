@@ -34,7 +34,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                     </div>
                     <div id="app-menu">
                         {APP_MENU.map((x, ind) => (
-                            <div key={`app-menu-${ind}`}>
+                            <div key={`app-menu-${ind}`} onClick={() => window.open(x.link)}>
                                 {x.label}
                             </div>
                         ))}

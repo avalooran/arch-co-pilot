@@ -24,7 +24,7 @@ function Chat({ chatItems }) {
                                         size={25}
                                         color={"#0E5447"}
                                         />
-                                    </div>
+                                    </div>  
                                 )
                                 :
                                 null
