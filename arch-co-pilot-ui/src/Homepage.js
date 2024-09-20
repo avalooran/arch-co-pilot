@@ -32,6 +32,9 @@ function Homepage() {
     }
 
     const saveTopic = async (chatItems) => {
+        if(chatItems.length === 0)
+            return null;
+
         const apiResponse = await saveTopicApi(chatItems);
         if (apiResponse.status)
             updateTopicHistoryList(topicHistoryList.map(x => {

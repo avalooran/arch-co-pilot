@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiChatNewLine } from "react-icons/ri";
 import { FaArrowsUpToLine } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
@@ -8,10 +8,15 @@ import Chat from './Chat';
 import { getResponseForQuestionApi } from '../utils/request';
 
 function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedTopic }) {
+    const [searchText, updateSearchText] = useState("");
+    const [selectedFile, updateSelectedFile] = useState(null);
     const [chatItems, updateChatItems] = useState([]);
-    const [disableTextArea, updateDisableTextArea] = useState(false);
-    const chatItemsRef = useRef(chatItems);
+    const [botToRespond, updateBotToRespond] = useState(false);
+
+    const fileUploadRef = useRef(null);
+    const chatItemsRef = useRef();
     chatItemsRef.current = chatItems;
+
     const onSearch = (searchText, uploadedFile) => {
         const searchedInput = searchText.trim();
         updateChatItems([...chatItemsRef.current, {
@@ -19,7 +24,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             uploadDoc: uploadedFile,
             isBot: false
         }]);
-        updateDisableTextArea(true);
+        updateBotToRespond(true);
         triggerResponse(searchedInput, uploadedFile ? `${uploadedFile.name} - YetToIntegrateS3FileUploadService` : "");
     }
     const triggerResponse = async (userQuestion, addHocDocumentPath) => {
@@ -40,17 +45,21 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             }, 10);
         }
         else {
-            for (let i = 0; i < response.length; i++) {
-                setTimeout(() => {
-                    updateChatItems(chatItemsRef.current.map((x, ind) => {
-                        if (ind === chatItemsRef.current.length - 1)
-                            return { message: response.substring(0, i + 1), isBot: true }
-                        else
-                            return x;
-                    }));
-                    if (i === response.length - 1)
-                        updateDisableTextArea(false);
-                }, 100 + (i * 5));
+            if (response.length === 0)
+                updateBotToRespond(false);
+            else {
+                for (let i = 0; i < response.length; i++) {
+                    setTimeout(() => {
+                        updateChatItems(chatItemsRef.current.map((x, ind) => {
+                            if (ind === chatItemsRef.current.length - 1)
+                                return { message: response.substring(0, i + 1), isBot: true }
+                            else
+                                return x;
+                        }));
+                        if (i === response.length - 1)
+                            updateBotToRespond(false);
+                    }, 100 + (i * 5));
+                }
             }
         }
     }
@@ -59,7 +68,12 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             saveTopic(chatItems);
 
         updateChatItems([]);
+        updateSearchText("");
     }
+    useEffect(() => {
+        createNewChat();
+        selectedTopic?.topic && updateSearchText(selectedTopic.topic);
+    }, [selectedTopic]);
 
     return (
         <div id="chatwindow-wrapper">
@@ -93,7 +107,15 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                 <Chat chatItems={chatItems} />
             </div>
             <div id="chat-footer">
-                <ChatInput onSearch={onSearch} disableTextArea={disableTextArea} selectedTopic={selectedTopic} createNewChat={createNewChat} />
+                <ChatInput
+                    searchText={searchText}
+                    updateSearchText={updateSearchText}
+                    selectedFile={selectedFile}
+                    updateSelectedFile={updateSelectedFile}
+                    fileUploadRef={fileUploadRef}
+                    onSearch={onSearch}
+                    botToRespond={botToRespond}
+                />
             </div>
         </div>
     )

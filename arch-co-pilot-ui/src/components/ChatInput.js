@@ -1,78 +1,78 @@
-import { useState, useRef, useEffect } from 'react';
 import './ChatInput.css';
 import { BsFillSendFill } from "react-icons/bs";
 import { FaFileImage } from "react-icons/fa";
 
-function ChatInput({ onSearch, disableTextArea, selectedTopic, createNewChat }) {
-    const [searchText, updateSearchText] = useState("");
-    const [canAsk, updateCanAsk] = useState(false);
-    const [selectedFile, updateSelectedFile] = useState(null);
-    const fileUploadRef = useRef(null);
+function ChatInput({
+    searchText,
+    updateSearchText,
+    selectedFile,
+    updateSelectedFile,
+    fileUploadRef,
+    onSearch,
+    botToRespond
+}) {
+    const disableUserAction = (searchText.trim() === "" || botToRespond);
+
     const onKeyDown = (e) => {
-        if (e.key === "Enter" && !disableTextArea) {
+        if (e.key === "Enter") {
             e.preventDefault();
-            onAsk();
-            updateSearchText("");
+            triggerOnSearch();
         }
     }
     const onSearchTextChange = (e) => {
-        const input = e.target.value;
-        updateCanAsk(input.trim() !== "");
-        updateSearchText(input);
-    }
-    const onAsk = () => {
-        if (!disableTextArea) {
-            if (searchText.trim() !== "") {
-                updateSelectedFile(null);
-                fileUploadRef.current.value = "";
-                onSearch(searchText, selectedFile);
-            }
-            updateSearchText("");
-        }
+        updateSearchText(e.target.value);
     }
     const onFileChange = (event) => {
         updateSelectedFile(event.target.files[0]);
-    };
-    useEffect(() => {
-        updateSearchText(selectedTopic.topic);
-        createNewChat();
-    }, [selectedTopic])
-    
+    }
+    const triggerOnSearch = () => {
+        if(!disableUserAction) {
+            onSearch(searchText, selectedFile);
+            resetInputs();
+        }
+    }
+    const resetInputs = () => {
+        updateSearchText("");
+        updateSelectedFile(null);
+        fileUploadRef.current.value = "";
+    }
+
     return (
         <div className="chat-input">
-            <div title={selectedFile?.name && selectedFile?.size ? `File - ${selectedFile.name} (Size - ${selectedFile.size})`: ""}>
-            <input type="file" ref={fileUploadRef} onChange={onFileChange} />
+            <div title={selectedFile?.name && selectedFile?.size ? `File - ${selectedFile.name} (Size - ${selectedFile.size})` : ""}>
+                <input 
+                    type="file" 
+                    ref={fileUploadRef} 
+                    onChange={onFileChange} 
+                />
                 <FaFileImage
                     size={30}
                     style={{
-                        ...(!(canAsk && !disableTextArea) && false && {
-                            cursor: "not-allowed",
-                            fill: "gray"
-                        }),
                         ...(selectedFile && {
                             fill: "green"
                         })
-                        
+
                     }}
-                    onClick={() => {fileUploadRef.current.click()}}
+                    onClick={() => fileUploadRef?.current?.click()}
                 />
             </div>
-            <textarea value={searchText} onChange={onSearchTextChange} onKeyDown={onKeyDown} />
+            <textarea 
+                value={searchText} 
+                onChange={onSearchTextChange} 
+                onKeyDown={onKeyDown} 
+            />
             <div>
                 <BsFillSendFill
                     size={30}
                     style={{
-                        ...(!(canAsk && !disableTextArea) && {
+                        ...(disableUserAction && {
                             cursor: "not-allowed",
                             fill: "gray"
                         })
                     }}
-                    onClick={onAsk}
+                    onClick={triggerOnSearch}
                 />
-
             </div>
-
-            {/* <button className={canAsk && !disableTextArea ? "active" : ""} disabled={!(canAsk && !disableTextArea)} onClick={onAsk}>Ask</button> */}
         </div>
     );
 }
