@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './ChatInput.css';
 import { BsFillSendFill } from "react-icons/bs";
 import { FaFileImage } from "react-icons/fa";
 
-function ChatInput({ onSearch, disableTextArea }) {
+function ChatInput({ onSearch, disableTextArea, selectedTopic, createNewChat }) {
     const [searchText, updateSearchText] = useState("");
     const [canAsk, updateCanAsk] = useState(false);
     const [selectedFile, updateSelectedFile] = useState(null);
@@ -33,6 +33,11 @@ function ChatInput({ onSearch, disableTextArea }) {
     const onFileChange = (event) => {
         updateSelectedFile(event.target.files[0]);
     };
+    useEffect(() => {
+        updateSearchText(selectedTopic.topic);
+        createNewChat();
+    }, [selectedTopic])
+    
     return (
         <div className="chat-input">
             <div title={selectedFile?.name && selectedFile?.size ? `File - ${selectedFile.name} (Size - ${selectedFile.size})`: ""}>

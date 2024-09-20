@@ -1,4 +1,4 @@
-export const questionSuggestions = [
+export const topicSuggestionListMock = [
     {
         topic: "Explain Reference Architecture for CTM",
         link: ""
@@ -22,7 +22,7 @@ export const questionSuggestions = [
     
 ];
 
-export const prevTopic = [
+export const topicHistoryListMock = [
     {
         period: "Today",
         topic: [

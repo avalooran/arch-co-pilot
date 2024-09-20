@@ -4,11 +4,10 @@ import { FaStar } from "react-icons/fa";
 import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
 import { APP_MENU, APP_NAME } from '../constants/app';
-import { questionSuggestions } from '../constants/mock';
 import ChatWindow from './ChatWindow';
 
 
-function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
+function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, topicSuggestionList, selectedTopic, updateSelectedTopic }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
@@ -50,8 +49,8 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                             />
                         </div>
                         <div id="question-suggestions" >
-                            {questionSuggestions.map((x, ind) => (
-                                <div key={`question-suggestion-${ind}`}>
+                            {topicSuggestionList.map((x, ind) => (
+                                <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedTopic({topic: x.topic, link: ""})}>
                                     {x.topic}
                                 </div>
                             ))}
@@ -60,7 +59,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose }) {
                     </div>
                 </div>
                 <div id="mainpane-chatwindow">
-                    <ChatWindow isSubHeaderOpen={isSubHeaderOpen} toggleSubHeaderOpen={toggleSubHeaderOpen} />
+                    <ChatWindow isSubHeaderOpen={isSubHeaderOpen} toggleSubHeaderOpen={toggleSubHeaderOpen} saveTopic={saveTopic} selectedTopic={selectedTopic}/>
                 </div>
             </div>
         </div>

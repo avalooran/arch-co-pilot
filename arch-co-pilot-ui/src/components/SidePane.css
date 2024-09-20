@@ -87,7 +87,7 @@
     box-sizing: border-box;
     width: 100%;
     padding: 10px 0px 10px 10px;
-
+    cursor: pointer;
 }
 
 .prev-topic-period-topic>div {
@@ -95,7 +95,7 @@
     padding-left: 10px;
     font-style: italic;
     font-size: 15px;
-    overflow: hidden;
+    overflow: hidden;    
 }
 
 .prev-topic-period-topic:hover {

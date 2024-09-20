@@ -2,9 +2,8 @@ import { TbWindowMinimize } from "react-icons/tb";
 import { MdOutlineTopic } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
 import './SidePane.css';
-import { prevTopic } from '../constants/mock';
 
-function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
+function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, updateSelectedTopic }) {
     return (
         <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose ? "close" : "open"}`}>
             <div id="sidepane-header">
@@ -30,7 +29,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
                     </div>
                     <div id="prev-topic-body">
                         <div>
-                            {prevTopic.map((x, ind) => {
+                            {topicHistoryList.map((x, ind) => {
                                 return (
                                     <div key={"prev-topic-period-wrapper" + ind}>
                                         <div className="prev-topic-period">
@@ -38,7 +37,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose }) {
                                             <div>{x.period}</div>
                                         </div>
                                         {x.topic.map((y, index) => (
-                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index}>
+                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic({ topic: y.topic, link: ""})} >
                                                 <div>{y.topic}</div>
                                             </div>
                                         ))}

@@ -5,9 +5,9 @@ import { CiStar } from "react-icons/ci";
 import './ChatWindow.css';
 import ChatInput from './ChatInput';
 import Chat from './Chat';
-import { searchApiUrl } from '../constants/request';
+import { getResponseForQuestionApi } from '../utils/request';
 
-function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
+function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedTopic }) {
     const [chatItems, updateChatItems] = useState([]);
     const [disableTextArea, updateDisableTextArea] = useState(false);
     const chatItemsRef = useRef(chatItems);
@@ -19,57 +19,48 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
             uploadDoc: uploadedFile,
             isBot: false
         }]);
-        if(uploadedFile) {
-            // To Integrate with API that saves file in S3 and returns the S3 link
-            getResponse(searchedInput, "YetToIntegrateS3FileUploadService")
-        }
-        else
-            getResponse(searchedInput, "");
-    }
-    const getResponse = (userQuestion, addHocDocumentPath) => {
         updateDisableTextArea(true);
-        const headers = {
-            userid: 'TestUserId',
-            sessionid: 'TestSessionId',
-            eventdatetime: new Date(),
-            conversationtopic: 'TestConversationTopic',
-            "Content-Type": "application/json"
-        };
-        const requestBody = {
-            userQuestion,
-            addHocDocumentPath
-        };
-        fetch(searchApiUrl, { method: 'POST', headers, body: JSON.stringify(requestBody) })
-            .then(res => res.json())
-            .then(res => {
-                insertBotsResponse(res.answer);
-            })
-            .catch((err) => {
-                console.log("Err", err);
-            });
-
+        triggerResponse(searchedInput, uploadedFile ? `${uploadedFile.name} - YetToIntegrateS3FileUploadService` : "");
     }
-    const insertBotsResponse = (responseMsg) => {
-        setTimeout(() => {
-            updateChatItems([...chatItemsRef.current, {
-                message: "...",
-                isBot: true
-            }]);
-        }, 10);
-
-        for (let i = 0; i < responseMsg.length; i++) {
+    const triggerResponse = async (userQuestion, addHocDocumentPath) => {
+        insertBotResponse("pre", null)
+        const apiResponse = await getResponseForQuestionApi({ userQuestion, addHocDocumentPath });
+        if (apiResponse.status)
+            insertBotResponse("actual", apiResponse.data?.answer);
+        else
+            insertBotResponse("actual", `Oops Something went wrong. Please try again.`);
+    }
+    const insertBotResponse = (type, response) => {
+        if (type === "pre") {
             setTimeout(() => {
-                updateChatItems(chatItemsRef.current.map((x, ind) => {
-                    if (ind == chatItemsRef.current.length - 1)
-                        return { message: responseMsg.substring(0, i + 1), isBot: true }
-                    else
-                        return x;
-                }));
-                if (i == responseMsg.length - 1)
-                    updateDisableTextArea(false);
-            }, 100 + (i * 5));
+                updateChatItems([...chatItemsRef.current, {
+                    message: "...",
+                    isBot: true
+                }]);
+            }, 10);
+        }
+        else {
+            for (let i = 0; i < response.length; i++) {
+                setTimeout(() => {
+                    updateChatItems(chatItemsRef.current.map((x, ind) => {
+                        if (ind === chatItemsRef.current.length - 1)
+                            return { message: response.substring(0, i + 1), isBot: true }
+                        else
+                            return x;
+                    }));
+                    if (i === response.length - 1)
+                        updateDisableTextArea(false);
+                }, 100 + (i * 5));
+            }
         }
     }
+    const createNewChat = () => {
+        if (chatItems.length > 0)
+            saveTopic(chatItems);
+
+        updateChatItems([]);
+    }
+
     return (
         <div id="chatwindow-wrapper">
             <div id="chat-header">
@@ -94,7 +85,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                     <RiChatNewLine
                         size={25}
                         color={"black"}
-                        onClick={() => updateChatItems([])}
+                        onClick={createNewChat}
                     />
                 </div>
             </div>
@@ -102,7 +93,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen }) {
                 <Chat chatItems={chatItems} />
             </div>
             <div id="chat-footer">
-                <ChatInput onSearch={onSearch} disableTextArea={disableTextArea} />
+                <ChatInput onSearch={onSearch} disableTextArea={disableTextArea} selectedTopic={selectedTopic} createNewChat={createNewChat} />
             </div>
         </div>
     )
