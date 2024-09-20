@@ -3,7 +3,7 @@ body {
   font-family: Calibri;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-width: 800px;
+  min-width: 1000px;
 }
 
 code {
