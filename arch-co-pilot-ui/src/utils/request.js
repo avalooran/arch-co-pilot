@@ -1,5 +1,73 @@
-import { getResponseForQuestionApiUrl, getTopicHistoryListApiUrl, getTopicSuggestionListApiUrl, saveTopicApiUrl } from '../constants/request';
+import { getFilePathApiUrl, getResponseForQuestionApiUrl, getTopicHistoryListApiUrl, getTopicSuggestionListApiUrl, saveTopicApiUrl } from '../constants/request';
 
+export const getFilePathApi = async (payload) => {
+    return await fetch(
+            getFilePathApiUrl,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    userid: 'TestUserId',
+                    sessionid: 'TestSessionId',
+                    eventdatetime: new Date()                    
+                },
+                body: JSON.stringify({
+                    fileName: payload.name,
+                    fileContent: ''
+                })
+            }
+        )
+        .then(res => {
+            if (res.ok)
+                return res.json();
+            else
+                throw new Error(`Request failed - ${res.status}`);
+        })
+        .then(res => {
+            return {
+                status: true,
+                data: res,
+                errorMsg: null
+            }
+        })
+        .catch((err) => {
+            return {
+                status: false,
+                data: null,
+                errorMsg: err
+            }
+        });
+}
+export const uploadFileToS3Api = async (url, payload) => {
+    console.log("Payload", payload);
+    return await fetch(
+            url,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'multipart/form-data'           
+                },
+                body: payload
+            }
+        )
+        .then(res => {
+            if (res.ok)
+                return {
+                    status: true,
+                    data: res,
+                    errorMsg: null
+                }
+            else
+                throw new Error(`Request failed - ${res.status}`);
+        })
+        .catch((err) => {
+            return {
+                status: false,
+                data: null,
+                errorMsg: err
+            }
+        });
+}
 export const getResponseForQuestionApi = async (payload) => {
     return await fetch(
             getResponseForQuestionApiUrl,

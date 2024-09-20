@@ -5,7 +5,7 @@ import { CiStar } from "react-icons/ci";
 import './ChatWindow.css';
 import ChatInput from './ChatInput';
 import Chat from './Chat';
-import { getResponseForQuestionApi } from '../utils/request';
+import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
 
 function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedTopic }) {
     const [searchText, updateSearchText] = useState("");
@@ -25,15 +25,39 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             isBot: false
         }]);
         updateBotToRespond(true);
-        triggerResponse(searchedInput, uploadedFile ? `${uploadedFile.name} - YetToIntegrateS3FileUploadService` : "");
+        triggerApiCalls(searchedInput, uploadedFile);
+    }
+    const triggerApiCalls = async (searchedInput, uploadedFile) => {
+        insertBotResponse("pre", null)
+        if (uploadedFile) {
+            const apiResponse = await getFilePathApi(uploadedFile);
+            if (apiResponse.status) {
+                const filePath = apiResponse.data?.url;
+                if(filePath) {
+                    const apiResponse1 = await uploadFileToS3Api(filePath, uploadedFile);
+                    if(apiResponse1.status)
+                        triggerResponse(searchedInput, filePath);
+                    else
+                        handleBotError();
+                }
+                else 
+                    handleBotError();
+            }
+            else
+                handleBotError();
+        }
+        else
+            triggerResponse(searchedInput, ""); 
     }
     const triggerResponse = async (userQuestion, addHocDocumentPath) => {
-        insertBotResponse("pre", null)
         const apiResponse = await getResponseForQuestionApi({ userQuestion, addHocDocumentPath });
         if (apiResponse.status)
             insertBotResponse("actual", apiResponse.data?.answer);
         else
-            insertBotResponse("actual", `Oops Something went wrong. Please try again.`);
+            handleBotError();
+    }
+    const handleBotError = () => {
+        insertBotResponse("actual", `Oops Something went wrong. Please try again.`);
     }
     const insertBotResponse = (type, response) => {
         if (type === "pre") {
