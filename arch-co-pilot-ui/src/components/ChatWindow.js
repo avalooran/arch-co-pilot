@@ -6,6 +6,7 @@ import './ChatWindow.css';
 import ChatInput from './ChatInput';
 import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
+import { buildS3GetUrl } from '../utils/common';
 
 function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedTopic }) {
     const [searchText, updateSearchText] = useState("");
@@ -30,27 +31,28 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
     const triggerApiCalls = async (searchedInput, uploadedFile) => {
         insertBotResponse("pre", null)
         if (uploadedFile) {
-            const apiResponse = await getFilePathApi(uploadedFile);
-            if (apiResponse.status) {
-                const filePath = apiResponse.data?.url;
-                if(filePath) {
-                    const apiResponse1 = await uploadFileToS3Api(filePath, uploadedFile);
-                    if(apiResponse1.status)
-                        triggerResponse(searchedInput, filePath);
-                    else
-                        handleBotError();
+            const apiResponse = await getFilePathApi({ fileName: uploadedFile.name, fileContent: '' });
+            if (apiResponse.status && apiResponse.data && apiResponse.data["url"] && apiResponse.data["url"]["url"] && apiResponse.data["url"]["fields"]) {
+                const formData = new FormData();
+                Object.keys(apiResponse.data["url"]["fields"]).map(key => {
+                    formData.append(key, apiResponse.data["url"]["fields"][key]);
+                });
+                formData.append("file", uploadedFile)
+                const apiResponse1 = await uploadFileToS3Api(apiResponse.data["url"]["url"], formData);
+                if (apiResponse1.status) {
+                    triggerResponse(searchedInput, buildS3GetUrl(apiResponse.data["url"]["url"], uploadedFile.name));
                 }
-                else 
+                else
                     handleBotError();
             }
             else
                 handleBotError();
         }
         else
-            triggerResponse(searchedInput, ""); 
+            triggerResponse(searchedInput, "");
     }
     const triggerResponse = async (userQuestion, addHocDocumentPath) => {
-        const apiResponse = await getResponseForQuestionApi({ userQuestion, addHocDocumentPath });
+        const apiResponse = await getResponseForQuestionApi({ userQuestion, ...(addHocDocumentPath && { addHocDocumentPath }) });
         if (apiResponse.status)
             insertBotResponse("actual", apiResponse.data?.answer);
         else

@@ -1,3 +1,7 @@
+#mainpane-wrapper {
+    flex: 1;
+}
+
 #mainpane-wrapper>div {
     display: flex;
     flex-direction: column;

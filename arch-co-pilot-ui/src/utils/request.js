@@ -11,10 +11,7 @@ export const getFilePathApi = async (payload) => {
                     sessionid: 'TestSessionId',
                     eventdatetime: new Date()                    
                 },
-                body: JSON.stringify({
-                    fileName: payload.name,
-                    fileContent: ''
-                })
+                body: JSON.stringify(payload)
             }
         )
         .then(res => {
@@ -43,9 +40,9 @@ export const uploadFileToS3Api = async (url, payload) => {
     return await fetch(
             url,
             {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'multipart/form-data'           
+                    // 'Content-Type': 'multipart/form-data'           
                 },
                 body: payload
             }
@@ -76,7 +73,7 @@ export const getResponseForQuestionApi = async (payload) => {
                 headers: {
                     userid: 'TestUserId',
                     sessionid: 'TestSessionId',
-                    eventdatetime: new Date(),
+                    eventdatetime: 'TestEventDateTime',
                     conversationtopic: 'TestConversationTopic',
                     "Content-Type": "application/json"
                 },
