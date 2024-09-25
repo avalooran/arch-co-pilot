@@ -23,6 +23,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
         updateChatItems([...chatItemsRef.current, {
             message: searchedInput,
             uploadDoc: uploadedFile,
+            type: 'simple',
             isBot: false
         }]);
         updateBotToRespond(true);
@@ -54,7 +55,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
     const triggerResponse = async (userQuestion, addHocDocumentPath) => {
         const apiResponse = await getResponseForQuestionApi({ userQuestion, ...(addHocDocumentPath && { addHocDocumentPath }) });
         if (apiResponse.status)
-            insertBotResponse("actual", apiResponse.data?.answer);
+            insertBotResponse("complex", apiResponse.data?.answer);
         else
             handleBotError();
     }
@@ -62,23 +63,28 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
         insertBotResponse("actual", `Oops Something went wrong. Please try again.`);
     }
     const insertBotResponse = (type, response) => {
-        if (type === "pre") {
-            setTimeout(() => {
-                updateChatItems([...chatItemsRef.current, {
-                    message: "...",
-                    isBot: true
-                }]);
-            }, 10);
-        }
-        else {
-            if (response.length === 0)
-                updateBotToRespond(false);
-            else {
+        switch(type) {
+            case "pre":
+                setTimeout(() => {
+                    updateChatItems([...chatItemsRef.current, {
+                        message: "...",
+                        uploadDoc: null,
+                        type: 'simple',
+                        isBot: true
+                    }]);
+                }, 10);
+            break;
+            case "simple":
                 for (let i = 0; i < response.length; i++) {
                     setTimeout(() => {
                         updateChatItems(chatItemsRef.current.map((x, ind) => {
                             if (ind === chatItemsRef.current.length - 1)
-                                return { message: response.substring(0, i + 1), isBot: true }
+                                return { 
+                                    message: response.substring(0, i + 1),
+                                    uploadDoc: null,
+                                    type: 'simple',
+                                    isBot: true
+                                }
                             else
                                 return x;
                         }));
@@ -86,7 +92,20 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                             updateBotToRespond(false);
                     }, 100 + (i * 5));
                 }
-            }
+            break;
+            case "complex":
+                updateChatItems(chatItemsRef.current.map((x, ind) => {
+                    if (ind === chatItemsRef.current.length - 1)
+                        return { 
+                            message: response,
+                            uploadDoc: null,
+                            type: 'complex',
+                            isBot: true
+                        }
+                    else
+                        return x;
+                }));
+                updateBotToRespond(false);
         }
     }
     const createNewChat = () => {
@@ -130,7 +149,10 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                 </div>
             </div>
             <div id="chat-body">
-                <Chat chatItems={chatItems} />
+                <Chat 
+                    chatItems={chatItems} 
+                    updateBotToRespond={updateBotToRespond}
+                />
             </div>
             <div id="chat-footer">
                 <ChatInput

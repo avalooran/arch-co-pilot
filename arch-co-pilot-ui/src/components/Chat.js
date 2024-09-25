@@ -3,7 +3,7 @@ import { PiAtomFill } from "react-icons/pi";
 import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
 
-function Chat({ chatItems }) {
+function Chat({ chatItems, updateBotToRespond }) {
     const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -30,7 +30,24 @@ function Chat({ chatItems }) {
                                 null
                             }
                             <div className="chat-msg">
-                                <div>{x.message}</div>
+                                {x.type == 'complex' ?
+                                    <div>
+                                        {x.message.map((msg, msgInd) => (
+                                            <div key={`msg-${ind}-${msgInd}`}>
+                                                <div>{msg.text_response}</div>
+                                                {msg.image_response?.map((msgImg, msgImgInd) => (
+                                                    <div key={`msg-img-${ind}-${msgInd}-${msgImgInd}`}>
+                                                        <div><b>{msgImg.image_description}</b></div>
+                                                        <div>{msgImg.image_summary}</div>
+                                                        <div><img src={msgImg.image_base64} alt={msgImg.image_base64} /></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    :
+                                    <div>{x.message}</div>
+                                }
                                 {x?.uploadDoc?.name &&
                                     <div className="uploaded-file" title={`File - ${x.uploadDoc.name} (Size - ${x.uploadDoc.size})`}>
                                         <div>
@@ -45,6 +62,11 @@ function Chat({ chatItems }) {
                         </div>
                     )
                 })}
+                {updateBotToRespond || true ? 
+                    <img></img>
+                :
+                    null
+                }
             </div>
         </div>
     );
