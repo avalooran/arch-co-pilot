@@ -34,8 +34,8 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             const apiResponse = await getFilePathApi({ fileName: uploadedFile.name, fileContent: '' });
             if (apiResponse.status && apiResponse.data && apiResponse.data["url"] && apiResponse.data["url"]["url"] && apiResponse.data["url"]["fields"]) {
                 const formData = new FormData();
-                Object.keys(apiResponse.data["url"]["fields"]).map(key => {
-                    formData.append(key, apiResponse.data["url"]["fields"][key]);
+                Object.entries(apiResponse.data["url"]["fields"]).forEach(function([key, val]){
+                    formData.append(key, val);
                 });
                 formData.append("file", uploadedFile)
                 const apiResponse1 = await uploadFileToS3Api(apiResponse.data["url"]["url"], formData);
@@ -99,6 +99,8 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                 }]);
                 updateBotToRespond(false);
             break;
+            default:
+                break;
         }
     }
     const createNewChat = () => {

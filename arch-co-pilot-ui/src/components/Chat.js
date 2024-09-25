@@ -16,7 +16,7 @@ function Chat({ chatItems, botToRespond }) {
             <div className="chat-items-wrapper">
                 {chatItems.map((x, ind) => {
                     return (
-                        <div className={"chat-item " + (x.isBot ? "bot" : "")} key={"chatItem-" + ind} ref={ind == chatItems.length - 1 ? messagesEndRef : null}>
+                        <div className={"chat-item " + (x.isBot ? "bot" : "")} key={"chatItem-" + ind} ref={ind === chatItems.length - 1 ? messagesEndRef : null}>
                             {x.isBot ?
                                 (
                                     <div>
@@ -30,7 +30,7 @@ function Chat({ chatItems, botToRespond }) {
                                 null
                             }
                             <div className="chat-msg">
-                                {x.type == 'complex' ?
+                                {x.type === 'complex' ?
                                     <div>
                                         {x.message.map((msg, msgInd) => (
                                             <div key={`msg-${ind}-${msgInd}`}>
