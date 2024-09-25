@@ -3,7 +3,7 @@ import { PiAtomFill } from "react-icons/pi";
 import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
 
-function Chat({ chatItems, updateBotToRespond }) {
+function Chat({ chatItems, botToRespond }) {
     const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -35,7 +35,7 @@ function Chat({ chatItems, updateBotToRespond }) {
                                         {x.message.map((msg, msgInd) => (
                                             <div key={`msg-${ind}-${msgInd}`}>
                                                 <div>{msg.text_response}</div>
-                                                {msg.image_response?.map((msgImg, msgImgInd) => (
+                                                {msg.image_response.length > 0 && msg.image_response.map((msgImg, msgImgInd) => (
                                                     <div key={`msg-img-${ind}-${msgInd}-${msgImgInd}`}>
                                                         <div><b>{msgImg.image_description}</b></div>
                                                         <div>{msgImg.image_summary}</div>
@@ -62,10 +62,13 @@ function Chat({ chatItems, updateBotToRespond }) {
                         </div>
                     )
                 })}
-                {updateBotToRespond || true ? 
-                    <img></img>
-                :
-                    null
+                {botToRespond &&
+                    <div className="loading-icon">
+                        <PiAtomFill
+                            size={40}
+                            color={"#0E5447"}
+                        />
+                    </div>
                 }
             </div>
         </div>
