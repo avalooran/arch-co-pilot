@@ -2,7 +2,6 @@ import { TbWindowMinimize } from "react-icons/tb";
 import { MdOutlineTopic } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
 import './SidePane.css';
-import { destroySession } from "../utils/app";
 
 function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, updateSelectedTopic, logout }) {
     return (

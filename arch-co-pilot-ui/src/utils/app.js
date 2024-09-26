@@ -39,7 +39,7 @@ export const destroySession = () => {
     localStorage.removeItem("chat_session");
 }
 export const getChatSession = () => {
-    return JSON.parse(atob(localStorage.getItem("chat_session")));
+    return localStorage.getItem("chat_session") == null? null: JSON.parse(atob(localStorage.getItem("chat_session")));
 }
 export const setChatSession = (obj) => {
     localStorage.setItem("chat_session", btoa(JSON.stringify(obj)));

@@ -91,14 +91,14 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                 }
             break;
             case "complex":
+                updateBotToRespond(false);
                 updateChatItems([...chatItemsRef.current, { 
                     message: response,
                     uploadDoc: null,
                     type: 'complex',
                     isBot: true
-                }]);
-                updateBotToRespond(false);
-            break;
+                }]);                
+                break;
             default:
                 break;
         }

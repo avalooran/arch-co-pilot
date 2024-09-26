@@ -12,25 +12,26 @@ function App() {
         console.log("IssessionValid", isSessionValid());
         updateIsAuthenticated(isSessionValid());
     }
-    
+
     useState(() => {
+        triggerSessionWatcher();
         setInterval(triggerSessionWatcher, 6000);
     }, []);
 
-    
+
     const validatePassKey = (passKey) => {
         updateErrorMsg("");
         updateIsAuthenticating(true);
         setTimeout(() => {
             updateIsAuthenticating(false);
-            if(passKey === 'architecturecopilotadmin' || passKey === 'test') {                
+            if (passKey === 'architecturecopilotadmin' || passKey === 'test') {
                 updateIsAuthenticated(true);
-                establishSession(passKey === 'architecturecopilotadmin' ? "superuser": "test");
+                establishSession(passKey === 'architecturecopilotadmin' ? "superuser" : "test");
             }
             else {
                 updateErrorMsg("Incorrect passkey!");
                 updateIsAuthenticated(false);
-            }            
+            }
         }, 1000);
     }
 
@@ -41,9 +42,9 @@ function App() {
 
     return (
         <div>
-            {isAuthenticated ? 
+            {isAuthenticated ?
                 <Homepage logout={logout} />
-            :
+                :
                 <AuthPopup validatePassKey={validatePassKey} errorMsg={errorMsg} isAuthenticating={isAuthenticating} />
             }
         </div>
