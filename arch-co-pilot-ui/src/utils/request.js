@@ -1,4 +1,5 @@
 import { getFilePathApiUrl, getResponseForQuestionApiUrl, getTopicHistoryListApiUrl, getTopicSuggestionListApiUrl, saveTopicApiUrl } from '../constants/request';
+import { getSessionId, getUserId } from './app';
 
 export const getFilePathApi = async (payload) => {
     return await fetch(
@@ -7,8 +8,8 @@ export const getFilePathApi = async (payload) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    userid: 'TestUserId',
-                    sessionid: 'TestSessionId',
+                    userid: getUserId(),
+                    sessionid: getSessionId(),
                     eventdatetime: new Date()                    
                 },
                 body: JSON.stringify(payload)
@@ -71,8 +72,8 @@ export const getResponseForQuestionApi = async (payload) => {
             {
                 method: 'POST',
                 headers: {
-                    userid: 'TestUserId',
-                    sessionid: 'TestSessionId',
+                    userid: getUserId(),
+                    sessionid: getSessionId(),
                     eventdatetime: 'TestEventDateTime',
                     conversationtopic: 'TestConversationTopic',
                     "Content-Type": "application/json"
@@ -107,8 +108,8 @@ export const getTopicHistoryListApi = async () => {
             {
                 method: 'GET',
                 headers: {
-                    userid: 'TestUserId',
-                    sessionid: 'TestSessionId',
+                    userid: getUserId(),
+                    sessionid: getSessionId(),
                     eventdatetime: new Date(),
                     conversationtopic: 'TestConversationTopic',
                     "Content-Type": "application/json"
@@ -142,8 +143,8 @@ export const getTopicSuggestionListApi = async () => {
             {
                 method: 'GET',
                 headers: {
-                    userid: 'TestUserId',
-                    sessionid: 'TestSessionId',
+                    userid: getUserId(),
+                    sessionid: getSessionId(),
                     eventdatetime: new Date(),
                     conversationtopic: 'TestConversationTopic',
                     "Content-Type": "application/json"
@@ -177,8 +178,8 @@ export const saveTopicApi = async (payload) => {
             {
                 method: 'POST',
                 headers: {
-                    userid: 'TestUserId',
-                    sessionid: 'TestSessionId',
+                    userid: getUserId(),
+                    sessionid: getSessionId(),
                     eventdatetime: new Date(),
                     conversationtopic: 'TestConversationTopic',
                     "Content-Type": "application/json"

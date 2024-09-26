@@ -34,7 +34,7 @@ textarea {
     font-family: Calibri;
 }
 
-button {
+.chat-input  button {
     width: 8%;
     min-width: 70px;
     margin: 0 2%;

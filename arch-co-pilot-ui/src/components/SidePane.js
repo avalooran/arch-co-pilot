@@ -2,8 +2,9 @@ import { TbWindowMinimize } from "react-icons/tb";
 import { MdOutlineTopic } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
 import './SidePane.css';
+import { destroySession } from "../utils/app";
 
-function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, updateSelectedTopic }) {
+function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, updateSelectedTopic, logout }) {
     return (
         <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose ? "close" : "open"}`}>
             <div id="sidepane-header">
@@ -37,7 +38,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
                                             <div>{x.period}</div>
                                         </div>
                                         {x.topic.map((y, index) => (
-                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic({ topic: y.topic, link: ""})} >
+                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic({ topic: y.topic, link: "" })} >
                                                 <div>{y.topic}</div>
                                             </div>
                                         ))}
@@ -48,8 +49,8 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
                     </div>
                 </div>
             </div>
-            <div id="sidepane-footer">
-                Meet the team
+            <div id="sidepane-footer" onClick={logout}>
+                Logout
             </div>
         </div>
     )

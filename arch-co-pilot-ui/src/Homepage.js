@@ -5,7 +5,7 @@ import MainPane from './components/MainPane';
 import { getTopicHistoryListApi, getTopicSuggestionListApi, saveTopicApi } from './utils/request';
 import { topicHistoryListMock, topicSuggestionListMock } from './constants/mock';
 
-function Homepage() {
+function Homepage({ logout }) {
     const [isSidePaneClose, updateIsSidePaneClose] = useState(false);
     const [topicHistoryList, updateTopicHistoryList] = useState([]);
     const [topicSuggestionList, updateTopicSuggestionList] = useState([]);
@@ -32,21 +32,21 @@ function Homepage() {
     }
 
     const saveTopic = async (chatItems) => {
-        if(chatItems.length === 0)
+        if (chatItems.length === 0)
             return null;
 
         const apiResponse = await saveTopicApi(chatItems);
         if (apiResponse.status)
             updateTopicHistoryList(topicHistoryList.map(x => {
-                if(x.period === "Today")
-                    x.topic = [ { topic: chatItems[0].message, link: ""}, [...x.topic] ];
+                if (x.period === "Today")
+                    x.topic = [{ topic: chatItems[0].message, link: "" }, [...x.topic]];
                 return x;
             }));
         else {
             // Once API is avaialable, remove the else condition
             updateTopicHistoryList(topicHistoryList.map(x => {
-                if(x.period === "Today")
-                    x.topic = [ { topic: chatItems[0].message, link: ""}, ...x.topic ];
+                if (x.period === "Today")
+                    x.topic = [{ topic: chatItems[0].message, link: "" }, ...x.topic];
                 return x;
             }));
         }
@@ -64,6 +64,7 @@ function Homepage() {
                 toggleSidePaneClose={toggleSidePaneClose}
                 topicHistoryList={topicHistoryList}
                 updateSelectedTopic={updateSelectedTopic}
+                logout={logout}
             />
             <MainPane
                 isSidePaneClose={isSidePaneClose}
