@@ -36,8 +36,8 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
                                             <CiTimer />
                                             <div>{x.period}</div>
                                         </div>
-                                        {x.topic.map((y, index) => (
-                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic({ topic: y.topic, link: "" })} >
+                                        {x.topics.map((y, index) => (
+                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic(y.topicId)} >
                                                 <div>{y.topic}</div>
                                             </div>
                                         ))}

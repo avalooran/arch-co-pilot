@@ -36,10 +36,10 @@ function Chat({ chatItems, botToRespond }) {
                                             <div key={`msg-${ind}-${msgInd}`}>
                                                 <div>{msg.text_response}</div>
                                                 {msg.image_response.length > 0 && msg.image_response.map((msgImg, msgImgInd) => (
-                                                    <div key={`msg-img-${ind}-${msgInd}-${msgImgInd}`}>
+                                                    <div className="chat-msg-img-wrapper" key={`msg-img-${ind}-${msgInd}-${msgImgInd}`}>
                                                         <div><b>{msgImg.image_description}</b></div>
                                                         <div>{msgImg.image_summary}</div>
-                                                        <div><img src={msgImg.image_base64} alt={msgImg.image_base64} /></div>
+                                                        <div><img src={`data:image/png;base64, ${msgImg.image_base64}`} alt={msgImg.image_base64} /></div>
                                                     </div>
                                                 ))}
                                             </div>

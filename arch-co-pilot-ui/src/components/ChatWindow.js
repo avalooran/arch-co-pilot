@@ -6,26 +6,29 @@ import './ChatWindow.css';
 import ChatInput from './ChatInput';
 import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
-import { buildS3GetUrl } from '../utils/common';
+import { buildS3GetUrl, getCurrentTs } from '../utils/common';
+import { getChatHistoryFromStorage } from '../utils/app';
 
-function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedTopic }) {
+function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritizeTopic, selectedTopic, updateSelectedTopic, chatItems, updateChatItems }) {
     const [searchText, updateSearchText] = useState("");
     const [selectedFile, updateSelectedFile] = useState(null);
-    const [chatItems, updateChatItems] = useState([]);
     const [botToRespond, updateBotToRespond] = useState(false);
 
     const fileUploadRef = useRef(null);
     const chatItemsRef = useRef();
     chatItemsRef.current = chatItems;
 
-    const onSearch = (searchText, uploadedFile) => {
+    const onSearch = (searchText, uploadedFile) => {        
         const searchedInput = searchText.trim();
-        updateChatItems([...chatItemsRef.current, {
+        const chatItemToBeUpdated = {
             message: searchedInput,
             uploadDoc: uploadedFile,
             type: 'simple',
-            isBot: false
-        }]);
+            isBot: false,
+            ts: getCurrentTs()
+        };
+        updateChatItems([...chatItemsRef.current, chatItemToBeUpdated ]);
+
         triggerApiCalls(searchedInput, uploadedFile);
     }
     const triggerApiCalls = async (searchedInput, uploadedFile) => {
@@ -34,7 +37,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
             const apiResponse = await getFilePathApi({ fileName: uploadedFile.name, fileContent: '' });
             if (apiResponse.status && apiResponse.data && apiResponse.data["url"] && apiResponse.data["url"]["url"] && apiResponse.data["url"]["fields"]) {
                 const formData = new FormData();
-                Object.entries(apiResponse.data["url"]["fields"]).forEach(function([key, val]){
+                Object.entries(apiResponse.data["url"]["fields"]).forEach(function ([key, val]) {
                     formData.append(key, val);
                 });
                 formData.append("file", uploadedFile)
@@ -62,25 +65,28 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
         insertBotResponse("simple", `Oops Something went wrong. Please try again.`);
     }
     const insertBotResponse = (type, response) => {
-        switch(type) {
-           case "simple":
+        prioritizeTopic(selectedTopic);
+        switch (type) {
+            case "simple":
                 setTimeout(() => {
                     updateChatItems([...chatItemsRef.current, {
                         message: "...",
                         uploadDoc: null,
                         type: 'simple',
-                        isBot: true
+                        isBot: true,
+                        ts: getCurrentTs()
                     }]);
                 }, 0);
                 for (let i = 0; i < response.length; i++) {
                     setTimeout(() => {
                         updateChatItems(chatItemsRef.current.map((x, ind) => {
                             if (ind === chatItemsRef.current.length - 1)
-                                return { 
+                                return {
                                     message: response.substring(0, i + 1),
                                     uploadDoc: null,
                                     type: 'simple',
-                                    isBot: true
+                                    isBot: true,
+                                    ts: getCurrentTs()
                                 }
                             else
                                 return x;
@@ -89,32 +95,52 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                             updateBotToRespond(false);
                     }, 100 + (i * 5));
                 }
-            break;
+                break;
             case "complex":
                 updateBotToRespond(false);
-                updateChatItems([...chatItemsRef.current, { 
+                updateChatItems([...chatItemsRef.current, {
                     message: response,
                     uploadDoc: null,
                     type: 'complex',
-                    isBot: true
-                }]);                
+                    isBot: true,
+                    ts: getCurrentTs()
+                }]);
                 break;
             default:
                 break;
         }
     }
     const createNewChat = () => {
-        if (chatItems.length > 0)
-            saveTopic(chatItems);
-
+        updateSelectedTopic(null);
         updateChatItems([]);
         updateSearchText("");
     }
     useEffect(() => {
-        createNewChat();
-        selectedTopic?.topic && updateSearchText(selectedTopic.topic);
+        if (selectedTopic != null) {
+        //   updateChatItems(getChatItemsWithTopicId(selectedTopic));
+        }
     }, [selectedTopic]);
 
+    const getChatItemsWithTopicId = (topicId) => {
+        const chatHistoryFromStorage = getChatHistoryFromStorage();
+        if (chatHistoryFromStorage && chatHistoryFromStorage.length > 0) {
+            for(let i = 0; i < chatHistoryFromStorage.length; i++) {
+                for(let j = 0; j < chatHistoryFromStorage[i].topics.length; j++) {
+                    if(chatHistoryFromStorage[i].topics[j].topicId === topicId) {
+                        return chatHistoryFromStorage[i].topics[j].chatItems;
+                    }
+                }
+            }
+        }
+        return [];
+    }
+
+    useEffect(() => {
+        saveTopic(chatItems);
+    }, [chatItems]);
+
+    console.log("chatItems", chatItems);
+    console.log("SelectedTopic", selectedTopic);
     return (
         <div id="chatwindow-wrapper">
             <div id="chat-header">
@@ -144,8 +170,8 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, selectedT
                 </div>
             </div>
             <div id="chat-body">
-                <Chat 
-                    chatItems={chatItems} 
+                <Chat
+                    chatItems={chatItems}
                     botToRespond={botToRespond}
                 />
             </div>

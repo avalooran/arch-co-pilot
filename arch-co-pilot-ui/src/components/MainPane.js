@@ -7,7 +7,7 @@ import { APP_MENU, APP_NAME } from '../constants/app';
 import ChatWindow from './ChatWindow';
 
 
-function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, topicSuggestionList, selectedTopic, updateSelectedTopic }) {
+function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, prioritizeTopic, topicSuggestionList, selectedTopic, updateSelectedTopic, chatItems, updateChatItems }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
@@ -50,7 +50,7 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, topicSugges
                         </div>
                         <div id="question-suggestions" >
                             {topicSuggestionList.map((x, ind) => (
-                                <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedTopic({topic: x.topic, link: ""})}>
+                                <div key={`question-suggestion-${ind}`} /*onClick={() => updateSelectedTopic({topic: x.topic, link: ""})}*/ >
                                     {x.topic}
                                 </div>
                             ))}
@@ -59,7 +59,16 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, topicSugges
                     </div>
                 </div>
                 <div id="mainpane-chatwindow">
-                    <ChatWindow isSubHeaderOpen={isSubHeaderOpen} toggleSubHeaderOpen={toggleSubHeaderOpen} saveTopic={saveTopic} selectedTopic={selectedTopic}/>
+                    <ChatWindow
+                        isSubHeaderOpen={isSubHeaderOpen}
+                        toggleSubHeaderOpen={toggleSubHeaderOpen}
+                        saveTopic={saveTopic}
+                        prioritizeTopic={prioritizeTopic}
+                        selectedTopic={selectedTopic}
+                        updateSelectedTopic={updateSelectedTopic}
+                        chatItems={chatItems}
+                        updateChatItems={updateChatItems}
+                    />
                 </div>
             </div>
         </div>

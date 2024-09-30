@@ -84,3 +84,7 @@
     transform:rotate(360deg);
   }
 }
+
+.chat-msg-img-wrapper > div {
+    margin-top: 20px;
+}

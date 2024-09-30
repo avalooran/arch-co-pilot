@@ -25,23 +25,25 @@ export const topicSuggestionListMock = [
 export const topicHistoryListMock = [
     {
         period: "Today",
+        date: "mm/dd/yyyy",
         topic: [
             {
                 topic: "Explain Reference Architecture for CTM",
-                link: ""
+                chatItems: []
             },
             {
                 topic: "Walk me through ARB decision tree",
-                link: ""
+                chatItems: []
             }
         ]
     },
     {
         period: "Yesterday",
+        date: "mm/dd/yyyy",
         topic: [
             {
                 topic: "Explain how to use batch pattern",
-                link: ""
+                chatItems: []
             }
         ]
     }
