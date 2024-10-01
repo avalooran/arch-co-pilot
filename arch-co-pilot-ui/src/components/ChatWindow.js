@@ -64,8 +64,8 @@ function ChatWindow({
         else
             handleBotError();
     }
-    const handleBotError = () => {
-        insertBotResponse("simple", `Oops Something went wrong. Please try again.`);
+    const handleBotError = (msg) => {
+        insertBotResponse("simple", msg ? msg : `Oops Something went wrong. Please try again.`);
     }
     const insertBotResponse = (type, response) => {
         switch (type) {

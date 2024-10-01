@@ -17,6 +17,9 @@ function Homepage({ logout }) {
     const selectedTopicRef = useRef();
     selectedTopicRef.current = selectedTopic;
 
+    const topicHistoryListRef = useRef();
+    topicHistoryListRef.current = topicHistoryList;
+
     const toggleSidePaneClose = () => updateIsSidePaneClose(!isSidePaneClose);
     const setTopicHistoryList = () => {
         const chatHistoryFromStorage = getChatHistoryFromStorage();
@@ -36,11 +39,12 @@ function Homepage({ logout }) {
             // Once API is avaialable, remove the else condition
             updateTopicSuggestionList([...topicSuggestionListMock]);
         }
-    }  
+    }
     const triggerUpdateChatItems = (chatItems) => {
-        if(chatItems && chatItems.length > 0) {
+        if (chatItems && chatItems.length > 0) {
             const topicId = selectedTopicRef.current;
-            if(topicId === null) {
+            const topicHistoryList = topicHistoryListRef.current
+            if (topicId === null) {
                 // If it is a new chat activation
                 const newTopicObj = {
                     topicId: generateUUID(),
@@ -68,8 +72,8 @@ function Homepage({ logout }) {
             else {
                 // If it is old chat activation
                 let topicHistoryToBeUpdated = [];
-                if (topicHistoryList && 
-                    topicHistoryList[0] && 
+                if (topicHistoryList &&
+                    topicHistoryList[0] &&
                     topicHistoryList[0].topics &&
                     topicHistoryList[0].topics[0] &&
                     topicHistoryList[0].topics[0].topicId === topicId
@@ -78,7 +82,7 @@ function Homepage({ logout }) {
                     topicHistoryToBeUpdated = [...topicHistoryList];
                     topicHistoryToBeUpdated[0].topics[0].chatItems = chatItems;
                 }
-                else { 
+                else {
                     let selectedTopicObj = null;
                     // Remove the selectedTopicObj from the topicHistory
                     topicHistoryToBeUpdated = topicHistoryList.map(x => {
@@ -111,9 +115,9 @@ function Homepage({ logout }) {
     }
     const onTopicClick = (topicId) => {
         let chatItems = [];
-        for(let i = 0; i < topicHistoryList.length; i++) {
-            for(let j = 0; j < topicHistoryList[i].topics.length; j++) {
-                if(topicHistoryList[i].topics[j].topicId === topicId)
+        for (let i = 0; i < topicHistoryList.length; i++) {
+            for (let j = 0; j < topicHistoryList[i].topics.length; j++) {
+                if (topicHistoryList[i].topics[j].topicId === topicId)
                     chatItems = topicHistoryList[i].topics[j].chatItems;
             }
         }
@@ -127,14 +131,11 @@ function Homepage({ logout }) {
         setChatHistoryToStorage(topicHistoryList);
     }, [topicHistoryList]);
     useEffect(() => {
-        if(selectedTopic !== null) {
+        if (selectedTopic !== null) {
             onTopicClick(selectedTopic);
         }
     }, [selectedTopic]);
 
-    console.log("topicHistoryList", topicHistoryList);
-    console.log("ChatItems", chatItems);
-    console.log("selectedTopic", selectedTopic);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
