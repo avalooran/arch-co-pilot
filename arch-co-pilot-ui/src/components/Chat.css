@@ -84,7 +84,13 @@
     transform:rotate(360deg);
   }
 }
-
-.chat-msg-img-wrapper > div {
+.chat-msg-img-wrapper {
     margin-top: 20px;
+}
+.chat-msg-img-wrapper > div {
+    margin-top: 10px;
+}
+.chat-msg-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
 }
