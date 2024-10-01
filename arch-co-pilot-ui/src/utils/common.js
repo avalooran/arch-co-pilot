@@ -1,12 +1,16 @@
+export const generateUUID = () => {
+    return crypto.randomUUID();
+}
 export const buildS3GetUrl = (uploadUrl, fileName) => {    
     return `s3://${uploadUrl.replace("https://", "").replace(".s3.amazonaws.com", "")}${fileName}`
 }
 export const getDate = (ts) => {
     const today = new Date(ts);
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return mm + '/' + dd + '/' + yyyy;
+    return today.toLocaleDateString();
+}
+export const getDateWithTime = (ts) => {
+    const today = new Date(ts);
+    return today.toLocaleString().replace(",", "");
 }
 export const getCurrentTs = () => {
     return new Date().getTime();
@@ -26,6 +30,4 @@ export const getPeriod = (dateInput) => {
     else
         return dateInput;
 }
-export const generateUUID = () => {
-    return crypto.randomUUID();
-}
+

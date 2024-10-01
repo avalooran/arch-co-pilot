@@ -95,3 +95,10 @@
     max-height: 100%;
     border-radius: 4px;
 }
+.chat-msg-ts {
+    color: gray;
+    font-size: 11px;
+    font-family: calibri;
+    margin-top: 5px;
+    margin-left: 20px;
+}

@@ -95,6 +95,7 @@ export const getResponseForQuestionApi = async (payload) => {
             }
         })
         .catch((err) => {
+            console.log("err", err);
             return {
                 status: false,
                 data: null,
