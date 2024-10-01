@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Homepage.css';
 import SidePane from './components/SidePane';
 import MainPane from './components/MainPane';
@@ -13,6 +13,9 @@ function Homepage({ logout }) {
     const [topicSuggestionList, updateTopicSuggestionList] = useState([]);
     const [selectedTopic, updateSelectedTopic] = useState(null);
     const [chatItems, updateChatItems] = useState([]);
+
+    const selectedTopicRef = useRef();
+    selectedTopicRef.current = selectedTopic;
 
     const toggleSidePaneClose = () => updateIsSidePaneClose(!isSidePaneClose);
     const setTopicHistoryList = () => {
@@ -36,7 +39,7 @@ function Homepage({ logout }) {
     }  
     const triggerUpdateChatItems = (chatItems) => {
         if(chatItems && chatItems.length > 0) {
-            const topicId = selectedTopic;
+            const topicId = selectedTopicRef.current;
             if(topicId === null) {
                 // If it is a new chat activation
                 const newTopicObj = {
@@ -131,6 +134,7 @@ function Homepage({ logout }) {
 
     console.log("topicHistoryList", topicHistoryList);
     console.log("ChatItems", chatItems);
+    console.log("selectedTopic", selectedTopic);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
