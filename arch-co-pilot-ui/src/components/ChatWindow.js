@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { RiChatNewLine } from "react-icons/ri";
-import { FaArrowsUpToLine } from "react-icons/fa6";
+import { FaArrowsUpToLine, FaArrowsDownToLine } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
 import './ChatWindow.css';
 import ChatInput from './ChatInput';
@@ -8,11 +8,12 @@ import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
 import { buildS3GetUrl, getCurrentTs } from '../utils/common';
 
-function ChatWindow({ 
-        isSubHeaderOpen,
-        toggleSubHeaderOpen,
-        chatItems,
-        triggerUpdateChatItems 
+function ChatWindow({
+    isSubHeaderOpen,
+    toggleSubHeaderOpen,
+    chatItems,
+    triggerUpdateChatItems,
+    addToFav
 }) {
     const [searchText, updateSearchText] = useState("");
     const [selectedFile, updateSelectedFile] = useState(null);
@@ -22,7 +23,7 @@ function ChatWindow({
     const chatItemsRef = useRef();
     chatItemsRef.current = chatItems;
 
-    const onSearch = (searchText, uploadedFile) => {        
+    const onSearch = (searchText, uploadedFile) => {
         const searchedInput = searchText.trim();
         const chatItemToBeUpdated = {
             message: searchedInput,
@@ -31,7 +32,7 @@ function ChatWindow({
             isBot: false,
             ts: getCurrentTs()
         };
-        triggerUpdateChatItems([...chatItemsRef.current, chatItemToBeUpdated ]);
+        triggerUpdateChatItems([...chatItemsRef.current, chatItemToBeUpdated]);
         triggerApiCalls(searchedInput, uploadedFile);
     }
     const triggerApiCalls = async (searchedInput, uploadedFile) => {
@@ -61,8 +62,10 @@ function ChatWindow({
         const apiResponse = await getResponseForQuestionApi({ userQuestion, ...(addHocDocumentPath && { addHocDocumentPath }) });
         if (apiResponse.status)
             insertBotResponse("complex", apiResponse.data?.answer);
-        else
-            handleBotError();
+        else {
+            console.log("errorMsg", apiResponse.errorMsg);
+            handleBotError(apiResponse.errorMsg && apiResponse.errorMsg.status == 504 ? "Request timed out. Please try again": null);
+        }
     }
     const handleBotError = (msg) => {
         insertBotResponse("simple", msg ? msg : `Oops Something went wrong. Please try again.`);
@@ -120,7 +123,7 @@ function ChatWindow({
         <div id="chatwindow-wrapper">
             <div id="chat-header">
                 {isSubHeaderOpen ?
-                    <div>
+                    <div id="slide-icon" title="Slide above">
                         <FaArrowsUpToLine
                             size={25}
                             color={"black"}
@@ -128,21 +131,29 @@ function ChatWindow({
                         />
                     </div>
                     :
-                    <div>
-                        <CiStar
-                            size={30}
+                    <div id="slide-icon" title="Slide below">
+                        <FaArrowsDownToLine
+                            size={25}
                             color={"black"}
                             onClick={toggleSubHeaderOpen}
                         />
                     </div>
                 }
-                <div>
+                <div id="fav-icon" title="Add to favorites">
+                    <CiStar
+                        size={30}
+                        color={"black"}
+                        onClick={addToFav}
+                    />
+                </div>
+                <div id="new-chat-icon" title="Create New Chat">
                     <RiChatNewLine
                         size={25}
                         color={"black"}
                         onClick={createNewChat}
                     />
                 </div>
+                
             </div>
             <div id="chat-body">
                 <Chat

@@ -37,3 +37,15 @@
     flex-shrink: 0;
     padding: 10px 0px;
 }
+
+#fav-icon:hover > svg {
+    fill: white;
+}
+
+#new-chat-icon:hover > svg {
+    fill: white;
+}
+
+#slide-icon:hover > svg {
+    fill: white;
+}

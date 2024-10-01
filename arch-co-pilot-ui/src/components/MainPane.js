@@ -12,7 +12,9 @@ function MainPane({
         toggleSidePaneClose,
         topicSuggestionList,
         chatItems,
-        triggerUpdateChatItems
+        triggerUpdateChatItems,
+        updateSelectedTopic,
+        addToFav
 }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const toggleSubHeaderOpen = () => {
@@ -50,13 +52,13 @@ function MainPane({
                     <div id="question-suggestion-wrapper">
                         <div id="question-suggestion-icon" style={{ width: '10%' }}>
                             <FaStar
-                                size={25}
+                                size={35}
                                 color={"black"}
                             />
                         </div>
                         <div id="question-suggestions" >
-                            {topicSuggestionList.map((x, ind) => (
-                                <div key={`question-suggestion-${ind}`} /*onClick={() => updateSelectedTopic({topic: x.topic, link: ""})}*/ >
+                            {topicSuggestionList && topicSuggestionList.map((x, ind) => (
+                                <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedTopic(x.topicId)} >
                                     {x.topic}
                                 </div>
                             ))}
@@ -70,6 +72,7 @@ function MainPane({
                         toggleSubHeaderOpen={toggleSubHeaderOpen}
                         chatItems={chatItems}
                         triggerUpdateChatItems={triggerUpdateChatItems}
+                        addToFav={addToFav}
                     />
                 </div>
             </div>

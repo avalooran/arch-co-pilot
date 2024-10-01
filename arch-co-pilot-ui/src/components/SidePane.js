@@ -49,7 +49,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
                 </div>
             </div>
             <div id="sidepane-footer" onClick={logout}>
-                Logout
+                Clear Session
             </div>
         </div>
     )

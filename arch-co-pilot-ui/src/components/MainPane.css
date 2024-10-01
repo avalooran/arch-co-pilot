@@ -86,7 +86,8 @@
 
 #question-suggestion-icon {
     width: 10%;
-}
+    margin-left: 40px;
+}   
 
 #question-suggestions {
     width: 90%;

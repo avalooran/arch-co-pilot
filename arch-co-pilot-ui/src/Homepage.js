@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './Homepage.css';
 import SidePane from './components/SidePane';
 import MainPane from './components/MainPane';
-import { getTopicSuggestionListApi } from './utils/request';
-import { topicSuggestionListMock } from './constants/mock';
-import { getChatHistoryFromStorage, setChatHistoryToStorage } from './utils/app';
+import { getChatHistoryFromStorage, getChatSuggestionsFromStorage, maxSuggestions, setChatHistoryToStorage, setChatSuggestionsToStorage } from './utils/app';
 import { generateUUID, getCurrentDate, getPeriod } from './utils/common';
 
 function Homepage({ logout }) {
@@ -20,6 +18,9 @@ function Homepage({ logout }) {
     const topicHistoryListRef = useRef();
     topicHistoryListRef.current = topicHistoryList;
 
+    const topicSuggestionListRef = useRef();
+    topicSuggestionListRef.current = topicSuggestionList;
+
     const toggleSidePaneClose = () => updateIsSidePaneClose(!isSidePaneClose);
     const setTopicHistoryList = () => {
         const chatHistoryFromStorage = getChatHistoryFromStorage();
@@ -31,14 +32,20 @@ function Homepage({ logout }) {
                 };
             }));
     }
-    const setTopicSuggestionList = async () => {
-        const apiResponse = await getTopicSuggestionListApi();
-        if (apiResponse.status)
-            updateTopicSuggestionList(apiResponse.data);
-        else {
-            // Once API is avaialable, remove the else condition
-            updateTopicSuggestionList([...topicSuggestionListMock]);
+    const setTopicSuggestionList = () => {
+        let topicSuggestionListToBeUpdated = [...new Array(maxSuggestions)].map(x => {
+            return {
+                topicId: null,
+                topic: "",
+                chatItems: [] 
+            }
+        });
+        const chatSuggestionsFromStorage = getChatSuggestionsFromStorage();
+        if(chatSuggestionsFromStorage !== null && chatSuggestionsFromStorage.length > 0) {
+            topicSuggestionListToBeUpdated = [...chatSuggestionsFromStorage, ...topicSuggestionListToBeUpdated];
+            topicSuggestionListToBeUpdated.length = maxSuggestions;
         }
+        updateTopicSuggestionList(topicSuggestionListToBeUpdated);
     }
     const triggerUpdateChatItems = (chatItems) => {
         if (chatItems && chatItems.length > 0) {
@@ -123,6 +130,20 @@ function Homepage({ logout }) {
         }
         updateChatItems(chatItems);
     }
+    const addToFav = () => {
+        const topicId = selectedTopicRef.current;
+        const index = topicSuggestionListRef.current.findIndex(x => x && x.topicId === topicId);
+        if (topicId) {
+            const topicToBeAddedToFav = index === -1 ? {
+                topicId,
+                topic: chatItems[0].message,
+                chatItems: chatItems
+            }: topicSuggestionListRef.current[index];
+            const topicSuggestionListToBeUpdated = [topicToBeAddedToFav, ...topicSuggestionListRef.current.filter((_, ind) => ind !== index)];
+            topicSuggestionListToBeUpdated.length = maxSuggestions;
+            updateTopicSuggestionList(topicSuggestionListToBeUpdated);
+        }
+    }
     useEffect(() => {
         setTopicHistoryList();
         setTopicSuggestionList();
@@ -131,11 +152,15 @@ function Homepage({ logout }) {
         setChatHistoryToStorage(topicHistoryList);
     }, [topicHistoryList]);
     useEffect(() => {
+        topicSuggestionList.length > 0 && setChatSuggestionsToStorage(topicSuggestionList);
+    }, [topicSuggestionList]);
+    useEffect(() => {
         if (selectedTopic !== null) {
             onTopicClick(selectedTopic);
         }
     }, [selectedTopic]);
 
+    console.log("topicSuggestionList", topicSuggestionList);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
@@ -151,6 +176,8 @@ function Homepage({ logout }) {
                 topicSuggestionList={topicSuggestionList}
                 chatItems={chatItems}
                 triggerUpdateChatItems={triggerUpdateChatItems}
+                updateSelectedTopic={updateSelectedTopic}
+                addToFav={addToFav}
             />
         </div>
     )

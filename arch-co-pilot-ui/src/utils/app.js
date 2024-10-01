@@ -35,7 +35,7 @@ export const getChatSession = () => {
 }
 
 export const setChatSession = (obj) => {
-    setToStorage("chat_session",obj);
+    setToStorage("chat_session", obj);
 }
 
 export const isSessionValid = () => {
@@ -94,10 +94,32 @@ export const getChatHistoryFromStorage = () => {
             ]
         }
     ] */
-    return getFromStorage("chat_history"); 
+    return getFromStorage("chat_history");
 }
 
 /* 1c. Chat History utils ends here */
+
+/* 1c. Chat Suggestions based on favorites utils starts here */
+export const maxSuggestions = 5;
+
+export const setChatSuggestionsToStorage = (value) => {
+    setToStorage("chat_suggestions", value)
+
+}
+
+export const getChatSuggestionsFromStorage = () => {
+    /*
+    [
+        {
+            topicId: "",
+            topic: "",
+            chatItem: []
+        }
+    ] */
+    return getFromStorage("chat_suggestions");
+}
+
+/* 1c. Chat Suggestions based on favorites utils ends here */
 
 /* Session utils ends here */
 
