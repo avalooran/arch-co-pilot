@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { RiChatNewLine } from "react-icons/ri";
 import { FaArrowsUpToLine } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
@@ -7,9 +7,13 @@ import ChatInput from './ChatInput';
 import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
 import { buildS3GetUrl, getCurrentTs } from '../utils/common';
-import { getChatHistoryFromStorage } from '../utils/app';
 
-function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritizeTopic, selectedTopic, updateSelectedTopic, chatItems, updateChatItems }) {
+function ChatWindow({ 
+        isSubHeaderOpen,
+        toggleSubHeaderOpen,
+        chatItems,
+        triggerUpdateChatItems 
+}) {
     const [searchText, updateSearchText] = useState("");
     const [selectedFile, updateSelectedFile] = useState(null);
     const [botToRespond, updateBotToRespond] = useState(false);
@@ -27,8 +31,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritiz
             isBot: false,
             ts: getCurrentTs()
         };
-        updateChatItems([...chatItemsRef.current, chatItemToBeUpdated ]);
-
+        triggerUpdateChatItems([...chatItemsRef.current, chatItemToBeUpdated ]);
         triggerApiCalls(searchedInput, uploadedFile);
     }
     const triggerApiCalls = async (searchedInput, uploadedFile) => {
@@ -65,11 +68,10 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritiz
         insertBotResponse("simple", `Oops Something went wrong. Please try again.`);
     }
     const insertBotResponse = (type, response) => {
-        prioritizeTopic(selectedTopic);
         switch (type) {
             case "simple":
                 setTimeout(() => {
-                    updateChatItems([...chatItemsRef.current, {
+                    triggerUpdateChatItems([...chatItemsRef.current, {
                         message: "...",
                         uploadDoc: null,
                         type: 'simple',
@@ -79,7 +81,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritiz
                 }, 0);
                 for (let i = 0; i < response.length; i++) {
                     setTimeout(() => {
-                        updateChatItems(chatItemsRef.current.map((x, ind) => {
+                        triggerUpdateChatItems(chatItemsRef.current.map((x, ind) => {
                             if (ind === chatItemsRef.current.length - 1)
                                 return {
                                     message: response.substring(0, i + 1),
@@ -98,7 +100,7 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritiz
                 break;
             case "complex":
                 updateBotToRespond(false);
-                updateChatItems([...chatItemsRef.current, {
+                triggerUpdateChatItems([...chatItemsRef.current, {
                     message: response,
                     uploadDoc: null,
                     type: 'complex',
@@ -111,36 +113,9 @@ function ChatWindow({ isSubHeaderOpen, toggleSubHeaderOpen, saveTopic, prioritiz
         }
     }
     const createNewChat = () => {
-        updateSelectedTopic(null);
-        updateChatItems([]);
         updateSearchText("");
+        triggerUpdateChatItems([]);
     }
-    useEffect(() => {
-        if (selectedTopic != null) {
-        //   updateChatItems(getChatItemsWithTopicId(selectedTopic));
-        }
-    }, [selectedTopic]);
-
-    const getChatItemsWithTopicId = (topicId) => {
-        const chatHistoryFromStorage = getChatHistoryFromStorage();
-        if (chatHistoryFromStorage && chatHistoryFromStorage.length > 0) {
-            for(let i = 0; i < chatHistoryFromStorage.length; i++) {
-                for(let j = 0; j < chatHistoryFromStorage[i].topics.length; j++) {
-                    if(chatHistoryFromStorage[i].topics[j].topicId === topicId) {
-                        return chatHistoryFromStorage[i].topics[j].chatItems;
-                    }
-                }
-            }
-        }
-        return [];
-    }
-
-    useEffect(() => {
-        saveTopic(chatItems);
-    }, [chatItems]);
-
-    console.log("chatItems", chatItems);
-    console.log("SelectedTopic", selectedTopic);
     return (
         <div id="chatwindow-wrapper">
             <div id="chat-header">

@@ -7,7 +7,13 @@ import { APP_MENU, APP_NAME } from '../constants/app';
 import ChatWindow from './ChatWindow';
 
 
-function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, prioritizeTopic, topicSuggestionList, selectedTopic, updateSelectedTopic, chatItems, updateChatItems }) {
+function MainPane({ 
+        isSidePaneClose,
+        toggleSidePaneClose,
+        topicSuggestionList,
+        chatItems,
+        triggerUpdateChatItems
+}) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
@@ -62,12 +68,8 @@ function MainPane({ isSidePaneClose, toggleSidePaneClose, saveTopic, prioritizeT
                     <ChatWindow
                         isSubHeaderOpen={isSubHeaderOpen}
                         toggleSubHeaderOpen={toggleSubHeaderOpen}
-                        saveTopic={saveTopic}
-                        prioritizeTopic={prioritizeTopic}
-                        selectedTopic={selectedTopic}
-                        updateSelectedTopic={updateSelectedTopic}
                         chatItems={chatItems}
-                        updateChatItems={updateChatItems}
+                        triggerUpdateChatItems={triggerUpdateChatItems}
                     />
                 </div>
             </div>

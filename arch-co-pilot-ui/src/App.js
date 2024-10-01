@@ -9,7 +9,6 @@ function App() {
     const [isAuthenticating, updateIsAuthenticating] = useState(false);
 
     const triggerSessionWatcher = () => {
-        console.log("IssessionValid", isSessionValid());
         updateIsAuthenticated(isSessionValid());
     }
 

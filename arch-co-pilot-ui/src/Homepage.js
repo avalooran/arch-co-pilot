@@ -25,7 +25,6 @@ function Homepage({ logout }) {
                 };
             }));
     }
-
     const setTopicSuggestionList = async () => {
         const apiResponse = await getTopicSuggestionListApi();
         if (apiResponse.status)
@@ -34,88 +33,104 @@ function Homepage({ logout }) {
             // Once API is avaialable, remove the else condition
             updateTopicSuggestionList([...topicSuggestionListMock]);
         }
-    }
-
-    const saveTopic = (chatItems) => {
-        if (chatItems.length === 0)
-            return null;
-
-        if (topicHistoryList && topicHistoryList.length > 0) {
-            updateTopicHistoryList(topicHistoryList.map(x => {
-                if (x.period === "Today")
-                    x.topics = x.topics.map((y, ind) => {
-                        return {
-                            ...y,
-                            ...(ind === 0 && { topic: chatItems[0].message, chatItems })
+    }  
+    const triggerUpdateChatItems = (chatItems) => {
+        if(chatItems && chatItems.length > 0) {
+            const topicId = selectedTopic;
+            if(topicId === null) {
+                // If it is a new chat activation
+                const newTopicObj = {
+                    topicId: generateUUID(),
+                    topic: chatItems[0].message,
+                    chatItems
+                };
+                if (topicHistoryList.length > 0) {
+                    updateTopicHistoryList(topicHistoryList.map(x => {
+                        if (x.period === "Today")
+                            x.topics = [newTopicObj, ...x.topics];
+                        return x;
+                    }));
+                }
+                else {
+                    updateTopicHistoryList([
+                        {
+                            period: "Today",
+                            date: getCurrentDate(),
+                            topics: [newTopicObj]
                         }
-                    })
-                return x;
-            }));
-        }
-    }
-
-    const prioritizeTopic = (topicId) => {
-        if (topicId) {
-            //Already prioritized
-            if (topicHistoryList && topicHistoryList[0] && topicHistoryList[0].topics && topicHistoryList[0].topics[0] && topicHistoryList[0].topics[0].topicId === topicId)
-                return;
-
-            let selectedTopicObj = null;
-            // Remove the selectedTopicObj from the topicHistory
-            let topicHistoryToBeUpdated = topicHistoryList.map(x => {
-                const topics = [];
-                for (let i = 0; i < x.topics.length; i++) {
-                    if (x.topics[i].topicId === topicId)
-                        selectedTopicObj = x.topics[i];
-                    else
-                        topics = x.topics[i];
+                    ]);
                 }
-                return {
-                    ...x,
-                    topics
-                }
-            });
-            // Add it to the first
-            if (selectedTopicObj)
-                topicHistoryToBeUpdated[0].topics = [selectedTopicObj, ...topicHistoryToBeUpdated[0].topics];
-
-            updateTopicHistoryList(topicHistoryToBeUpdated);
-        }
-        else {
-            const newTopicObj = {
-                topicId: generateUUID(),
-                topic: "",
-                chatItems: []
-            };
-            if (topicHistoryList.length > 0) {
-                updateTopicHistoryList(topicHistoryList.map(x => {
-                    if (x.period === "Today")
-                        x.topics = [newTopicObj, ...x.topics];
-                    return x;
-                }));
+                updateSelectedTopic(newTopicObj.topicId);
             }
             else {
-                updateTopicHistoryList([
-                    {
-                        period: "Today",
-                        date: getCurrentDate(),
-                        topics: [newTopicObj]
-                    }
-                ]);
+                // If it is old chat activation
+                let topicHistoryToBeUpdated = [];
+                if (topicHistoryList && 
+                    topicHistoryList[0] && 
+                    topicHistoryList[0].topics &&
+                    topicHistoryList[0].topics[0] &&
+                    topicHistoryList[0].topics[0].topicId === topicId
+                ) {
+                    //Already prioritized
+                    topicHistoryToBeUpdated = [...topicHistoryList];
+                    topicHistoryToBeUpdated[0].topics[0].chatItems = chatItems;
+                }
+                else { 
+                    let selectedTopicObj = null;
+                    // Remove the selectedTopicObj from the topicHistory
+                    topicHistoryToBeUpdated = topicHistoryList.map(x => {
+                        let topics = [];
+                        for (let i = 0; i < x.topics.length; i++) {
+                            if (x.topics[i].topicId === topicId)
+                                selectedTopicObj = {
+                                    ...x.topics[i],
+                                    chatItems
+                                };
+                            else
+                                topics.push(x.topics[i]);
+                        }
+                        return {
+                            ...x,
+                            topics
+                        }
+                    });
+                    // Add it to the first
+                    if (selectedTopicObj)
+                        topicHistoryToBeUpdated[0].topics = [selectedTopicObj, ...topicHistoryToBeUpdated[0].topics];
+                }
+                updateTopicHistoryList(topicHistoryToBeUpdated);
             }
-            updateSelectedTopic(newTopicObj.topicId);
         }
+        else {
+            updateSelectedTopic(null);
+        }
+        updateChatItems(chatItems);
     }
-
+    const onTopicClick = (topicId) => {
+        let chatItems = [];
+        for(let i = 0; i < topicHistoryList.length; i++) {
+            for(let j = 0; j < topicHistoryList[i].topics.length; j++) {
+                if(topicHistoryList[i].topics[j].topicId === topicId)
+                    chatItems = topicHistoryList[i].topics[j].chatItems;
+            }
+        }
+        updateChatItems(chatItems);
+    }
     useEffect(() => {
         setTopicHistoryList();
         setTopicSuggestionList();
     }, []);
-
     useEffect(() => {
         setChatHistoryToStorage(topicHistoryList);
     }, [topicHistoryList]);
+    useEffect(() => {
+        if(selectedTopic !== null) {
+            onTopicClick(selectedTopic);
+        }
+    }, [selectedTopic]);
 
+    console.log("topicHistoryList", topicHistoryList);
+    console.log("ChatItems", chatItems);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
@@ -128,13 +143,9 @@ function Homepage({ logout }) {
             <MainPane
                 isSidePaneClose={isSidePaneClose}
                 toggleSidePaneClose={toggleSidePaneClose}
-                saveTopic={saveTopic}
-                prioritizeTopic={prioritizeTopic}
                 topicSuggestionList={topicSuggestionList}
-                selectedTopic={selectedTopic}
-                updateSelectedTopic={updateSelectedTopic}
                 chatItems={chatItems}
-                updateChatItems={updateChatItems}
+                triggerUpdateChatItems={triggerUpdateChatItems}
             />
         </div>
     )
