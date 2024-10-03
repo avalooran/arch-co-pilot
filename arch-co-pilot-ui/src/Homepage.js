@@ -24,13 +24,22 @@ function Homepage({ logout }) {
     const toggleSidePaneClose = () => updateIsSidePaneClose(!isSidePaneClose);
     const setTopicHistoryList = () => {
         const chatHistoryFromStorage = getChatHistoryFromStorage();
-        if (chatHistoryFromStorage && chatHistoryFromStorage.length > 0)
-            updateTopicHistoryList(chatHistoryFromStorage.map(chatHistory => {
+        if (chatHistoryFromStorage && chatHistoryFromStorage.length > 0) {
+            let topicHistoryListToBeUpdated = chatHistoryFromStorage.map(chatHistory => {
                 return {
                     ...chatHistory,
                     period: getPeriod(chatHistory.date)
-                };
-            }));
+                }
+            });
+            if(topicHistoryListToBeUpdated.findIndex(x => x.period === 'Today') === -1) {
+                topicHistoryListToBeUpdated = [ {
+                    period: "Today",
+                    date: getCurrentDate(),
+                    topics: []
+                }, ...topicHistoryListToBeUpdated];
+            }
+            updateTopicHistoryList(topicHistoryListToBeUpdated);
+        }
     }
     const setTopicSuggestionList = () => {
         let topicSuggestionListToBeUpdated = [...new Array(maxSuggestions)].map(x => {
