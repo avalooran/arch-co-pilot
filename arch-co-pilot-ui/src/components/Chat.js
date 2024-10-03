@@ -3,6 +3,7 @@ import { PiAtomFill } from "react-icons/pi";
 import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
 import { getDateWithTime } from '../utils/common';
+import { LuStar, LuCopy, LuRefreshCw } from "react-icons/lu";
 
 function Chat({ chatItems, botToRespond }) {
     const messagesEndRef = useRef(null);
@@ -69,6 +70,29 @@ function Chat({ chatItems, botToRespond }) {
                                     </div>                                
                                 </div>
                                 <div className="chat-msg-ts">{getDateWithTime(x.ts)}</div>
+                            </div>
+                            <div class="chat-msg-icon-wrapper">
+                                {!x.isBot &&<div title="Add question to favorites">
+                                    <LuStar
+                                        size={18}
+                                        color={"gray"}
+                                        onClick={() => {}}
+                                    />
+                                </div>}
+                                {!x.isBot &&<div title="Ask again">
+                                    <LuRefreshCw 
+                                        size={18}
+                                        color={"gray"}
+                                        onClick={() => {}}
+                                    />
+                                </div>}
+                                {x.isBot && <div title="Copy text">
+                                    <LuCopy
+                                        size={18}
+                                        color={"gray"}
+                                        onClick={() => {}}
+                                    />
+                                </div>}
                             </div>
                         </div>
                     )

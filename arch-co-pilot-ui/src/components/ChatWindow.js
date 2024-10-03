@@ -140,18 +140,20 @@ function ChatWindow({
                         />
                     </div>
                 }
-                <div id="fav-icon" title="Add to favorites">
-                    <CiStar
-                        size={30}
-                        color={"black"}
-                        onClick={addToFav}
-                    />
-                </div>
+                
                 <div id="new-chat-icon" title="Create New Chat">
                     <RiChatNewLine
                         size={25}
                         color={"black"}
                         onClick={() => clearFields(true)}
+                    />
+                </div>
+
+                <div id="fav-icon" title="Add topic to favorites">
+                    <CiStar
+                        size={30}
+                        color={"black"}
+                        onClick={addToFav}
                     />
                 </div>
                 
