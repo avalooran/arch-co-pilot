@@ -168,8 +168,6 @@ function Homepage({ logout }) {
             onTopicClick(selectedTopic);
         }
     }, [selectedTopic]);
-
-    console.log("topicSuggestionList", topicSuggestionList);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane

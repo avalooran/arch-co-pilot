@@ -9,7 +9,8 @@ function ChatInput({
     updateSelectedFile,
     fileUploadRef,
     onSearch,
-    botToRespond
+    botToRespond,
+    clearFields
 }) {
     const disableUserAction = (searchText.trim() === "" || botToRespond);
 
@@ -27,14 +28,9 @@ function ChatInput({
     }
     const triggerOnSearch = () => {
         if(!disableUserAction) {
-            onSearch(searchText, selectedFile);
-            resetInputs();
+            onSearch(selectedFile);
+            clearFields(false);
         }
-    }
-    const resetInputs = () => {
-        updateSearchText("");
-        updateSelectedFile(null);
-        fileUploadRef.current.value = "";
     }
 
     return (

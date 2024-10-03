@@ -99,7 +99,7 @@ export const getResponseForQuestionApi = async (payload) => {
             return {
                 status: false,
                 data: null,
-                errorMsg: err
+                errorMsg: err.message
             }
         });
 }

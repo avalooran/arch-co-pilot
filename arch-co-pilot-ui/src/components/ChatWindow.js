@@ -23,11 +23,11 @@ function ChatWindow({
     const chatItemsRef = useRef();
     chatItemsRef.current = chatItems;
 
-    const onSearch = (searchText, uploadedFile) => {
+    const onSearch = (uploadedFile) => {
         const searchedInput = searchText.trim();
         const chatItemToBeUpdated = {
             message: searchedInput,
-            uploadDoc: uploadedFile,
+            uploadDoc: uploadedFile && { name: uploadedFile.name, size: uploadedFile.size },
             type: 'simple',
             isBot: false,
             ts: getCurrentTs()
@@ -63,12 +63,11 @@ function ChatWindow({
         if (apiResponse.status)
             insertBotResponse("complex", apiResponse.data?.answer);
         else {
-            console.log("errorMsg", apiResponse.errorMsg);
-            handleBotError(apiResponse.errorMsg && apiResponse.errorMsg.status == 504 ? "Request timed out. Please try again": null);
+            handleBotError(apiResponse.errorMsg && apiResponse.errorMsg.includes('504') ? "Oops Request timed out. Please try again": null);
         }
     }
     const handleBotError = (msg) => {
-        insertBotResponse("simple", msg ? msg : `Oops Something went wrong. Please try again.`);
+        insertBotResponse("simple", msg ? msg : `Oops Something went wrong.`);
     }
     const insertBotResponse = (type, response) => {
         switch (type) {
@@ -115,9 +114,11 @@ function ChatWindow({
                 break;
         }
     }
-    const createNewChat = () => {
+    const clearFields = (isNewChat) => {
         updateSearchText("");
-        triggerUpdateChatItems([]);
+        isNewChat && triggerUpdateChatItems([]);
+        updateSelectedFile(null);
+        fileUploadRef.current.value = "";
     }
     return (
         <div id="chatwindow-wrapper">
@@ -150,7 +151,7 @@ function ChatWindow({
                     <RiChatNewLine
                         size={25}
                         color={"black"}
-                        onClick={createNewChat}
+                        onClick={() => clearFields(true)}
                     />
                 </div>
                 
@@ -170,6 +171,7 @@ function ChatWindow({
                     fileUploadRef={fileUploadRef}
                     onSearch={onSearch}
                     botToRespond={botToRespond}
+                    clearFields={clearFields}
                 />
             </div>
         </div>
