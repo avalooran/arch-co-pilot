@@ -1,3 +1,5 @@
+105 \
+    - When bot is responding restrict unwanted actions
 104 \
     - Lambda update to generate the url to be uploaded to input_files
     - Make the url change in front end as well

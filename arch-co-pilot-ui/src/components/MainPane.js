@@ -7,16 +7,17 @@ import { APP_MENU, APP_NAME } from '../constants/app';
 import ChatWindow from './ChatWindow';
 
 
-function MainPane({ 
-        isSidePaneClose,
-        toggleSidePaneClose,
-        topicSuggestionList,
-        chatItems,
-        triggerUpdateChatItems,
-        updateSelectedTopic,
-        addToFav
+function MainPane({
+    isSidePaneClose,
+    toggleSidePaneClose,
+    topicSuggestionList,
+    chatItems,
+    triggerUpdateChatItems,
+    updateSelectedTopic,
+    addToFav
 }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
+    const [activeSubHeaderTab, updateActiveSubHeaderTab] = useState("questions");
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
     }
@@ -49,15 +50,20 @@ function MainPane({
                     </div>
                 </div>
                 <div id="mainpane-subheader" className={`${isSubHeaderOpen ? 'open' : 'close'}`}>
+                    <div id="mainpane-subheader-tab">
+                        <div onClick={() => updateActiveSubHeaderTab("topics")} className={`${activeSubHeaderTab === "topics" ? "active": ""}`}>Topics</div>
+                        <div onClick={() => updateActiveSubHeaderTab("questions")}  className={`${activeSubHeaderTab === "questions" ? "active": ""}`}>Questions</div>
+                    </div>
                     <div id="question-suggestion-wrapper">
-                        <div id="question-suggestion-icon" style={{ width: '10%' }}>
+                        <div id="question-suggestion-icon">
                             <FaStar
                                 size={35}
                                 color={"black"}
                             />
                         </div>
-                        <div id="question-suggestions" >
-                            {topicSuggestionList && topicSuggestionList.map((x, ind) => (
+
+                        <div id="question-suggestions">
+                            {activeSubHeaderTab === "topics" && topicSuggestionList && topicSuggestionList.map((x, ind) => (
                                 <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedTopic(x.topicId)} >
                                     {x.topic}
                                 </div>
