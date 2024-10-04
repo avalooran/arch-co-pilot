@@ -3,9 +3,10 @@ import { PiAtomFill } from "react-icons/pi";
 import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
 import { getDateWithTime } from '../utils/common';
-import { LuStar, LuCopy, LuRefreshCw } from "react-icons/lu";
+import { LuStar, LuCopy } from "react-icons/lu";
+import { FAVORITE_QUESTION } from '../constants/app';
 
-function Chat({ chatItems, botToRespond }) {
+function Chat({ chatItems, botToRespond, addToFav }) {
     const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -71,22 +72,15 @@ function Chat({ chatItems, botToRespond }) {
                                 </div>
                                 <div className="chat-msg-ts">{getDateWithTime(x.ts)}</div>
                             </div>
-                            <div class="chat-msg-icon-wrapper">
+                            <div className="chat-msg-icon-wrapper">
                                 {!x.isBot &&<div title="Add question to favorites">
                                     <LuStar
                                         size={18}
                                         color={"gray"}
-                                        onClick={() => {}}
+                                        onClick={() => addToFav(FAVORITE_QUESTION, x.message)}
                                     />
                                 </div>}
-                                {!x.isBot &&<div title="Ask again">
-                                    <LuRefreshCw 
-                                        size={18}
-                                        color={"gray"}
-                                        onClick={() => {}}
-                                    />
-                                </div>}
-                                {x.isBot && <div title="Copy text">
+                                {<div title="Copy text">
                                     <LuCopy
                                         size={18}
                                         color={"gray"}

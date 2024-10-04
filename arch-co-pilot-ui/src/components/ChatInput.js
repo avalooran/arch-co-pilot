@@ -41,23 +41,25 @@ function ChatInput({
                     ref={fileUploadRef} 
                     onChange={onFileChange} 
                 />
-                <FaFileImage
-                    size={30}
-                    style={{
-                        ...(selectedFile && {
-                            fill: "green"
-                        })
+                <div title="Upload file">
+                    <FaFileImage
+                        size={30}
+                        style={{
+                            ...(selectedFile && {
+                                fill: "green"
+                            })
 
-                    }}
-                    onClick={() => fileUploadRef?.current?.click()}
-                />
+                        }}
+                        onClick={() => fileUploadRef?.current?.click()}
+                    />
+                </div>
             </div>
             <textarea 
                 value={searchText} 
                 onChange={onSearchTextChange} 
                 onKeyDown={onKeyDown} 
             />
-            <div>
+            <div title="Send">
                 <BsFillSendFill
                     size={30}
                     style={{

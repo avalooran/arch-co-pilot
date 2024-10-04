@@ -2,14 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import './Homepage.css';
 import SidePane from './components/SidePane';
 import MainPane from './components/MainPane';
-import { getChatHistoryFromStorage, getChatSuggestionsFromStorage, maxSuggestions, setChatHistoryToStorage, setChatSuggestionsToStorage } from './utils/app';
+import { getChatHistoryFromStorage, getChatSuggestionsFromStorage, getQuestionFavListFromStorage, setChatHistoryToStorage, setChatSuggestionsToStorage, setQuestionFavListToStorage } from './utils/app';
 import { generateUUID, getCurrentDate, getPeriod } from './utils/common';
+import { FAVORITE_QUESTION, FAVORITE_TOPIC, MAX_SUGGESTIONS } from './constants/app';
 
 function Homepage({ logout }) {
     const [isSidePaneClose, updateIsSidePaneClose] = useState(false);
     const [topicHistoryList, updateTopicHistoryList] = useState([]);
     const [topicSuggestionList, updateTopicSuggestionList] = useState([]);
+    const [questionFavList, updateQuestionFavList] = useState([]);
     const [selectedTopic, updateSelectedTopic] = useState(null);
+    const [selectedQuestion, updateSelectedQuestion] = useState(null);
     const [chatItems, updateChatItems] = useState([]);
 
     const selectedTopicRef = useRef();
@@ -21,6 +24,9 @@ function Homepage({ logout }) {
     const topicSuggestionListRef = useRef();
     topicSuggestionListRef.current = topicSuggestionList;
 
+    const questionFavListRef = useRef();
+    questionFavListRef.current = questionFavList;
+
     const toggleSidePaneClose = () => updateIsSidePaneClose(!isSidePaneClose);
     const setTopicHistoryList = () => {
         const chatHistoryFromStorage = getChatHistoryFromStorage();
@@ -31,8 +37,8 @@ function Homepage({ logout }) {
                     period: getPeriod(chatHistory.date)
                 }
             });
-            if(topicHistoryListToBeUpdated.findIndex(x => x.period === 'Today') === -1) {
-                topicHistoryListToBeUpdated = [ {
+            if (topicHistoryListToBeUpdated.findIndex(x => x.period === 'Today') === -1) {
+                topicHistoryListToBeUpdated = [{
                     period: "Today",
                     date: getCurrentDate(),
                     topics: []
@@ -42,19 +48,32 @@ function Homepage({ logout }) {
         }
     }
     const setTopicSuggestionList = () => {
-        let topicSuggestionListToBeUpdated = [...new Array(maxSuggestions)].map(x => {
+        let topicSuggestionListToBeUpdated = [...new Array(MAX_SUGGESTIONS)].map(x => {
             return {
                 topicId: null,
                 topic: "",
-                chatItems: [] 
+                chatItems: []
             }
         });
         const chatSuggestionsFromStorage = getChatSuggestionsFromStorage();
-        if(chatSuggestionsFromStorage !== null && chatSuggestionsFromStorage.length > 0) {
+        if (chatSuggestionsFromStorage !== null && chatSuggestionsFromStorage.length > 0) {
             topicSuggestionListToBeUpdated = [...chatSuggestionsFromStorage, ...topicSuggestionListToBeUpdated];
-            topicSuggestionListToBeUpdated.length = maxSuggestions;
+            topicSuggestionListToBeUpdated.length = MAX_SUGGESTIONS;
         }
         updateTopicSuggestionList(topicSuggestionListToBeUpdated);
+    }
+    const setQuestionFavList = () => {
+        let questionFavListToBeUpdated = [...new Array(MAX_SUGGESTIONS)].map(x => {
+            return {
+                searchText: ""
+            }
+        });
+        const questionFavListFromStorage = getQuestionFavListFromStorage();
+        if (questionFavListFromStorage !== null && questionFavListFromStorage.length > 0) {
+            questionFavListToBeUpdated = [...questionFavListFromStorage, ...questionFavListToBeUpdated];
+            questionFavListToBeUpdated.length = MAX_SUGGESTIONS;
+        }
+        updateQuestionFavList(questionFavListToBeUpdated);
     }
     const triggerUpdateChatItems = (chatItems) => {
         if (chatItems && chatItems.length > 0) {
@@ -138,24 +157,39 @@ function Homepage({ logout }) {
             }
         }
         updateChatItems(chatItems);
+        updateSelectedQuestion(null);
     }
-    const addToFav = () => {
-        const topicId = selectedTopicRef.current;
-        const index = topicSuggestionListRef.current.findIndex(x => x && x.topicId === topicId);
-        if (topicId) {
-            const topicToBeAddedToFav = index === -1 ? {
-                topicId,
-                topic: chatItems[0].message,
-                chatItems: chatItems
-            }: topicSuggestionListRef.current[index];
-            const topicSuggestionListToBeUpdated = [topicToBeAddedToFav, ...topicSuggestionListRef.current.filter((_, ind) => ind !== index)];
-            topicSuggestionListToBeUpdated.length = maxSuggestions;
-            updateTopicSuggestionList(topicSuggestionListToBeUpdated);
+    const addToFav = (type, value) => {
+        if(type === FAVORITE_TOPIC) {
+            const topicId = selectedTopicRef.current;
+            const index = topicSuggestionListRef.current.findIndex(x => x && x.topicId === topicId);
+            if (topicId) {
+                const topicToBeAddedToFav = index === -1 ? {
+                    topicId,
+                    topic: chatItems[0].message,
+                    chatItems: chatItems
+                } : topicSuggestionListRef.current[index];
+                const topicSuggestionListToBeUpdated = [topicToBeAddedToFav, ...topicSuggestionListRef.current.filter((_, ind) => ind !== index)];
+                topicSuggestionListToBeUpdated.length = MAX_SUGGESTIONS;
+                updateTopicSuggestionList(topicSuggestionListToBeUpdated);
+            }
+        }
+        else if(type === FAVORITE_QUESTION) {
+            if(value) {
+                const index = questionFavListRef.current.findIndex(x => x && x.searchText === value);
+                const questionsFavListToBeAdded = index === -1 ? {
+                    searchText: value
+                } : questionFavListRef.current[index];
+                const questionFavListToBeUpdated = [questionsFavListToBeAdded, ...questionFavListRef.current.filter((_, ind) => ind !== index)];
+                questionFavListToBeUpdated.length = MAX_SUGGESTIONS;
+                updateQuestionFavList(questionFavListToBeUpdated);
+            }
         }
     }
     useEffect(() => {
         setTopicHistoryList();
         setTopicSuggestionList();
+        setQuestionFavList();
     }, []);
     useEffect(() => {
         setChatHistoryToStorage(topicHistoryList);
@@ -164,10 +198,14 @@ function Homepage({ logout }) {
         topicSuggestionList.length > 0 && setChatSuggestionsToStorage(topicSuggestionList);
     }, [topicSuggestionList]);
     useEffect(() => {
+        questionFavList.length > 0 && setQuestionFavListToStorage(questionFavList);
+    }, [questionFavList]);
+    useEffect(() => {
         if (selectedTopic !== null) {
             onTopicClick(selectedTopic);
         }
     }, [selectedTopic]);
+    console.log("UpdateSElectedQuestion", selectedQuestion);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
@@ -181,9 +219,12 @@ function Homepage({ logout }) {
                 isSidePaneClose={isSidePaneClose}
                 toggleSidePaneClose={toggleSidePaneClose}
                 topicSuggestionList={topicSuggestionList}
+                questionFavList={questionFavList}
+                selectedQuestion={selectedQuestion}
                 chatItems={chatItems}
                 triggerUpdateChatItems={triggerUpdateChatItems}
                 updateSelectedTopic={updateSelectedTopic}
+                updateSelectedQuestion={updateSelectedQuestion}
                 addToFav={addToFav}
             />
         </div>

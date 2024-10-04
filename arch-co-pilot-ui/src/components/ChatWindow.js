@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiChatNewLine } from "react-icons/ri";
 import { FaArrowsUpToLine, FaArrowsDownToLine } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
@@ -7,11 +7,13 @@ import ChatInput from './ChatInput';
 import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
 import { buildS3GetUrl, getCurrentTs } from '../utils/common';
+import { FAVORITE_TOPIC } from '../constants/app';
 
 function ChatWindow({
     isSubHeaderOpen,
     toggleSubHeaderOpen,
     chatItems,
+    selectedQuestion,
     triggerUpdateChatItems,
     addToFav
 }) {
@@ -120,6 +122,15 @@ function ChatWindow({
         updateSelectedFile(null);
         fileUploadRef.current.value = "";
     }
+    useEffect(() => {
+        if(selectedQuestion === null) {
+            updateSearchText("");
+        }
+        else {
+            clearFields(true);
+            updateSearchText(selectedQuestion);
+        }
+    }, [selectedQuestion])
     return (
         <div id="chatwindow-wrapper">
             <div id="chat-header">
@@ -153,7 +164,7 @@ function ChatWindow({
                     <CiStar
                         size={30}
                         color={"black"}
-                        onClick={addToFav}
+                        onClick={() => addToFav(FAVORITE_TOPIC)}
                     />
                 </div>
                 
@@ -162,6 +173,7 @@ function ChatWindow({
                 <Chat
                     chatItems={chatItems}
                     botToRespond={botToRespond}
+                    addToFav={addToFav}
                 />
             </div>
             <div id="chat-footer">

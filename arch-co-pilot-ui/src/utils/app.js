@@ -1,5 +1,6 @@
 /* 1. Session utils starts here */
 
+import { LS_CHAT_HISTORY, LS_CHAT_SESSION, LS_FAV_QUESTIONS, LS_FAV_TOPICS } from "../constants/app";
 import { generateUUID } from "./common";
 
 /* 1a. Common Session utils starts here */
@@ -22,7 +23,7 @@ export const getFromStorage = (key) => {
 const validity = 10 * 24 * 60 * 60;
 
 export const destroySession = () => {
-    destroyStorage("chat_session");
+    destroyStorage(LS_CHAT_SESSION);
 }
 
 export const getChatSession = () => {
@@ -31,11 +32,11 @@ export const getChatSession = () => {
         chat_session_id: generateUUID(),
         user_id: type
     }*/
-    return getFromStorage("chat_session");
+    return getFromStorage(LS_CHAT_SESSION);
 }
 
 export const setChatSession = (obj) => {
-    setToStorage("chat_session", obj);
+    setToStorage(LS_CHAT_SESSION, obj);
 }
 
 export const isSessionValid = () => {
@@ -76,7 +77,7 @@ export const getUserId = () => {
 
 /* 1c. Chat History utils starts here */
 export const setChatHistoryToStorage = (value) => {
-    setToStorage("chat_history", value)
+    setToStorage(LS_CHAT_HISTORY, value)
 
 }
 
@@ -94,17 +95,14 @@ export const getChatHistoryFromStorage = () => {
             ]
         }
     ] */
-    return getFromStorage("chat_history");
+    return getFromStorage(LS_CHAT_HISTORY);
 }
 
 /* 1c. Chat History utils ends here */
 
 /* 1c. Chat Suggestions based on favorites utils starts here */
-export const maxSuggestions = 5;
-
 export const setChatSuggestionsToStorage = (value) => {
-    setToStorage("chat_suggestions", value)
-
+    setToStorage(LS_FAV_TOPICS, value);
 }
 
 export const getChatSuggestionsFromStorage = () => {
@@ -116,10 +114,26 @@ export const getChatSuggestionsFromStorage = () => {
             chatItem: []
         }
     ] */
-    return getFromStorage("chat_suggestions");
+    return getFromStorage(LS_FAV_TOPICS);
 }
 
 /* 1c. Chat Suggestions based on favorites utils ends here */
+
+/* 1d. Question Fav List based on favorites utils starts here */
+export const setQuestionFavListToStorage = (value) => {
+    setToStorage(LS_FAV_QUESTIONS, value);
+}
+
+export const getQuestionFavListFromStorage = () => {
+    /*
+    [
+        {
+            searchText: ""
+        }
+    ] */
+    return getFromStorage(LS_FAV_QUESTIONS);
+}
+/* 1d. Question Fav List based on favorites utils ends here */
 
 /* Session utils ends here */
 

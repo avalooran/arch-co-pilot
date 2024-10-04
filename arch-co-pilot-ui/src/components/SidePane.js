@@ -7,7 +7,7 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
     return (
         <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose ? "close" : "open"}`}>
             <div id="sidepane-header">
-                <div>
+                <div title="Hide Topics History">
                     <TbWindowMinimize
                         size={32}
                         color={"black"}
