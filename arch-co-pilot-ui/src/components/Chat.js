@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { PiAtomFill } from "react-icons/pi";
 import { CiFileOn } from "react-icons/ci";
 import './Chat.css';
-import { getDateWithTime } from '../utils/common';
+import { copyToClipboard, getDateWithTime } from '../utils/common';
 import { LuStar, LuCopy } from "react-icons/lu";
 import { FAVORITE_QUESTION } from '../constants/app';
 
@@ -84,7 +84,7 @@ function Chat({ chatItems, botToRespond, addToFav }) {
                                     <LuCopy
                                         size={18}
                                         color={"gray"}
-                                        onClick={() => {}}
+                                        onClick={() => copyToClipboard(x.type, x.message)}
                                     />
                                 </div>}
                             </div>

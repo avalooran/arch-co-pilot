@@ -1,6 +1,6 @@
 import './ChatInput.css';
 import { BsFillSendFill } from "react-icons/bs";
-import { FaFileImage } from "react-icons/fa";
+import { FaFileUpload } from "react-icons/fa";
 
 function ChatInput({
     searchText,
@@ -42,7 +42,7 @@ function ChatInput({
                     onChange={onFileChange} 
                 />
                 <div title="Upload file">
-                    <FaFileImage
+                    <FaFileUpload
                         size={30}
                         style={{
                             ...(selectedFile && {

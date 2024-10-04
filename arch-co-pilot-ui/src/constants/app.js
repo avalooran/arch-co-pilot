@@ -20,4 +20,6 @@ export const LS_CHAT_SESSION = "chat_session";
 export const LS_CHAT_HISTORY = "chat_history";
 export const LS_FAV_TOPICS = "chat_suggestions";
 export const LS_FAV_QUESTIONS = "fav_questions";
+export const SIMPLE = "simple";
+export const COMPLEX = "complex";
 

@@ -205,7 +205,6 @@ function Homepage({ logout }) {
             onTopicClick(selectedTopic);
         }
     }, [selectedTopic]);
-    console.log("UpdateSElectedQuestion", selectedQuestion);
     return (
         <div id="home-page-wrapper" className="full-vh">
             <SidePane
