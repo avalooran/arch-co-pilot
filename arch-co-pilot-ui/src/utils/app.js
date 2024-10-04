@@ -12,6 +12,10 @@ export const destroyStorage = (key) => {
     localStorage.removeItem(key);
 }
 
+export const destroyAllStorage = () => {
+    localStorage.clear();
+}
+
 export const getFromStorage = (key) => {
     const value = localStorage.getItem(key);
     return value == null ? null : JSON.parse(atob(value));
@@ -23,7 +27,8 @@ export const getFromStorage = (key) => {
 const validity = 10 * 24 * 60 * 60;
 
 export const destroySession = () => {
-    destroyStorage(LS_CHAT_SESSION);
+   // destroyStorage(LS_CHAT_SESSION);
+   destroyAllStorage();
 }
 
 export const getChatSession = () => {
