@@ -3,7 +3,7 @@ import { MdOutlineTopic } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
 import './SidePane.css';
 
-function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, updateSelectedTopic, logout }) {
+function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, botToRespond, updateSelectedTopic, logout }) {
     return (
         <div id="sidepane-wrapper" className={`full-vh ${isSidePaneClose ? "close" : "open"}`}>
             <div id="sidepane-header">
@@ -37,8 +37,8 @@ function SidePane({ isSidePaneClose, toggleSidePaneClose, topicHistoryList, upda
                                             <div>{x.period}</div>
                                         </div>
                                         {x.topics.map((y, index) => (
-                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => updateSelectedTopic(y.topicId)} >
-                                                <div>{y.topic}</div>
+                                            <div className="prev-topic-period-topic" key={"prev-topic-period-topic-wrapper" + index} onClick={() => !botToRespond && updateSelectedTopic(y.topicId)} >
+                                                <div title={y.topic}>{y.topic}</div>
                                             </div>
                                         ))}
                                     </div>

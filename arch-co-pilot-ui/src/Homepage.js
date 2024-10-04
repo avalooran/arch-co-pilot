@@ -14,6 +14,7 @@ function Homepage({ logout }) {
     const [selectedTopic, updateSelectedTopic] = useState(null);
     const [selectedQuestion, updateSelectedQuestion] = useState(null);
     const [chatItems, updateChatItems] = useState([]);
+    const [botToRespond, updateBotToRespond] = useState(false);
 
     const selectedTopicRef = useRef();
     selectedTopicRef.current = selectedTopic;
@@ -211,6 +212,7 @@ function Homepage({ logout }) {
                 isSidePaneClose={isSidePaneClose}
                 toggleSidePaneClose={toggleSidePaneClose}
                 topicHistoryList={topicHistoryList}
+                botToRespond={botToRespond}
                 updateSelectedTopic={updateSelectedTopic}
                 logout={logout}
             />
@@ -225,6 +227,8 @@ function Homepage({ logout }) {
                 updateSelectedTopic={updateSelectedTopic}
                 updateSelectedQuestion={updateSelectedQuestion}
                 addToFav={addToFav}
+                botToRespond={botToRespond}
+                updateBotToRespond={updateBotToRespond}
             />
         </div>
     )

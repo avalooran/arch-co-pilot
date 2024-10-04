@@ -17,7 +17,9 @@ function MainPane({
     triggerUpdateChatItems,
     updateSelectedTopic,
     updateSelectedQuestion,
-    addToFav
+    addToFav,
+    botToRespond,
+    updateBotToRespond
 }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const [activeSubHeaderTab, updateActiveSubHeaderTab] = useState(FAVORITE_QUESTION);
@@ -69,13 +71,13 @@ function MainPane({
 
                         <div id="question-suggestions">
                             {activeSubHeaderTab === FAVORITE_TOPIC && topicSuggestionList && topicSuggestionList.map((x, ind) => (
-                                <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedTopic(x.topicId)} >
-                                    {x.topic}
+                                <div key={`question-suggestion-${ind}`} title={x.topic} onClick={() => !botToRespond && updateSelectedTopic(x.topicId)} >
+                                    <div>{x.topic}</div>
                                 </div>
                             ))}
                             {activeSubHeaderTab === FAVORITE_QUESTION && questionFavList && questionFavList.map((x, ind) => (
-                                <div key={`question-suggestion-${ind}`} onClick={() => updateSelectedQuestion(x.searchText)} >
-                                    {x.searchText}
+                                <div key={`question-suggestion-${ind}`} title={x.searchText} onClick={() => !botToRespond && updateSelectedQuestion(x.searchText)} >
+                                    <div>{x.searchText}</div>
                                 </div>
                             ))}
                         </div>
@@ -91,6 +93,8 @@ function MainPane({
                         triggerUpdateChatItems={triggerUpdateChatItems}
                         updateSelectedQuestion={updateSelectedQuestion}
                         addToFav={addToFav}
+                        botToRespond={botToRespond}
+                        updateBotToRespond={updateBotToRespond}
                     />
                 </div>
             </div>

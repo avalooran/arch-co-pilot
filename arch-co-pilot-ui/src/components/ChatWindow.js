@@ -15,11 +15,12 @@ function ChatWindow({
     chatItems,
     selectedQuestion,
     triggerUpdateChatItems,
-    addToFav
+    addToFav,
+    botToRespond,
+    updateBotToRespond
 }) {
     const [searchText, updateSearchText] = useState("");
     const [selectedFile, updateSelectedFile] = useState(null);
-    const [botToRespond, updateBotToRespond] = useState(false);
 
     const fileUploadRef = useRef(null);
     const chatItemsRef = useRef();
@@ -156,7 +157,7 @@ function ChatWindow({
                     <RiChatNewLine
                         size={25}
                         color={"black"}
-                        onClick={() => clearFields(true)}
+                        onClick={() => !botToRespond && clearFields(true)}
                     />
                 </div>
 
