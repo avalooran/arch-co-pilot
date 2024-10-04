@@ -132,9 +132,9 @@
 #question-suggestion-wrapper>div>div {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     flex: 1;
-    height: 100%;
+    height: 70%;
     box-sizing: border-box;
     border-radius: 5px;
     padding: 10px;
@@ -152,6 +152,10 @@
 #question-suggestion-wrapper>div>div:hover {
     background-color: #F5EAD9;
     cursor: pointer;
+}
+
+#question-suggestion-wrapper>div>div>div {
+    word-break: break-word;
 }
 
 #question-suggestion-icon {
