@@ -64,7 +64,7 @@ function MainPane({
                     <div id="question-suggestion-wrapper">
                         <div id="question-suggestion-icon">
                             <FaStar
-                                size={35}
+                                size={20}
                                 color={"black"}
                             />
                         </div>
