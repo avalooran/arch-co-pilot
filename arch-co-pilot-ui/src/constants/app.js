@@ -19,11 +19,15 @@ export const APP_MENU = [
 ];
 export const FAVORITE_TOPIC = "TOPICS";
 export const FAVORITE_QUESTION = "QUESTIONS";
-export const MAX_SUGGESTIONS = 5;
+
 export const LS_CHAT_SESSION = "chat_session";
 export const LS_CHAT_HISTORY = "chat_history";
 export const LS_FAV_TOPICS = "chat_suggestions";
 export const LS_FAV_QUESTIONS = "fav_questions";
+
 export const SIMPLE = "simple";
 export const COMPLEX = "complex";
 
+export const MAX_SUGGESTIONS = 5;
+export const MAX_RETRY_ATTEMPTS = 2;
+export const RETRY_INTERVAL = 10 * 1000; //10s

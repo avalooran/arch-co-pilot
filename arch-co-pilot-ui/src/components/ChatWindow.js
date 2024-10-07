@@ -7,7 +7,7 @@ import ChatInput from './ChatInput';
 import Chat from './Chat';
 import { getFilePathApi, getResponseForQuestionApi, uploadFileToS3Api } from '../utils/request';
 import { buildS3GetUrl, getCurrentTs } from '../utils/common';
-import { FAVORITE_TOPIC } from '../constants/app';
+import { FAVORITE_TOPIC, MAX_RETRY_ATTEMPTS, RETRY_INTERVAL } from '../constants/app';
 
 function ChatWindow({
     isSubHeaderOpen,
@@ -22,11 +22,13 @@ function ChatWindow({
     const [searchText, updateSearchText] = useState("");
     const [selectedFile, updateSelectedFile] = useState(null);
 
+    const retryAttemptCount = useRef(0);
     const fileUploadRef = useRef(null);
     const chatItemsRef = useRef();
     chatItemsRef.current = chatItems;
 
     const onSearch = (uploadedFile) => {
+        retryAttemptCount.current = 0;
         const searchedInput = searchText.trim();
         const chatItemToBeUpdated = {
             message: searchedInput,
@@ -66,7 +68,15 @@ function ChatWindow({
         if (apiResponse.status)
             insertBotResponse("complex", apiResponse.data?.answer);
         else {
-            handleBotError(apiResponse.errorMsg && apiResponse.errorMsg.includes('504') ? "Oops Request timed out. Please try again": null);
+            if(apiResponse.errorMsg.includes('504') && retryAttemptCount.current < MAX_RETRY_ATTEMPTS) {
+                retryAttemptCount.current++;
+                setTimeout(() => {
+                    triggerResponse(userQuestion, addHocDocumentPath);
+                }, RETRY_INTERVAL);
+            }
+            else {
+                handleBotError(apiResponse.errorMsg && apiResponse.errorMsg.includes('504') ? "Oops Request timed out. Please try again": null);
+            }
         }
     }
     const handleBotError = (msg) => {
