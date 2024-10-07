@@ -5,7 +5,7 @@ import { generateUUID } from "./common";
 
 /* 1a. Common Session utils starts here */
 export const setToStorage = (key, value) => {
-    localStorage.setItem(key, btoa(JSON.stringify(value)));
+    localStorage.setItem(key, JSON.stringify(value));
 }
 
 export const destroyStorage = (key) => {
@@ -18,7 +18,7 @@ export const destroyAllStorage = () => {
 
 export const getFromStorage = (key) => {
     const value = localStorage.getItem(key);
-    return value == null ? null : JSON.parse(atob(value));
+    return value == null ? null : JSON.parse(value);
 }
 /* 1a. Common Session utils ends here */
 

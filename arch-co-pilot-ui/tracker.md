@@ -1,3 +1,5 @@
+107 [DONE] \
+    - Remove base64 encoding \
 106 [DONE] \
     - Retry in case of gateway timeout 504 - 2 times at interval of 10seconds \ 
 105 [DONE] \

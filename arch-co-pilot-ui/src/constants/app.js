@@ -20,10 +20,10 @@ export const APP_MENU = [
 export const FAVORITE_TOPIC = "TOPICS";
 export const FAVORITE_QUESTION = "QUESTIONS";
 
-export const LS_CHAT_SESSION = "chat_session";
-export const LS_CHAT_HISTORY = "chat_history";
-export const LS_FAV_TOPICS = "chat_suggestions";
-export const LS_FAV_QUESTIONS = "fav_questions";
+export const LS_CHAT_SESSION = "chat_session_p1";
+export const LS_CHAT_HISTORY = "chat_history_p1";
+export const LS_FAV_TOPICS = "chat_suggestions_p1";
+export const LS_FAV_QUESTIONS = "fav_questions_p1";
 
 export const SIMPLE = "simple";
 export const COMPLEX = "complex";
