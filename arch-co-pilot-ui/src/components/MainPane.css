@@ -81,7 +81,7 @@
 
 #mainpane-subheader-tab > div {
     width: 30px;
-    height: 80px;
+    height: 140px;
     writing-mode: vertical-lr;
     display: flex;
     justify-content: center;
@@ -90,13 +90,17 @@
     color: black;
     cursor: pointer;
     box-shadow: 0px 1px 1px #F5EAD9;
-    border-radius: 1px;   
+    border-radius: 2px;   
     font-weight: bold; 
 }
 
 #mainpane-subheader-tab > .active {
     background-color: #FFA700;
     color: white;
+}
+
+#mainpane-subheader-tab > div > span:first-child {
+    padding-bottom: 10px;
 }
 
 #question-suggestion-wrapper {
@@ -106,24 +110,21 @@
 #question-suggestion-wrapper {
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     padding: 20px 20px;
     box-sizing: border-box;
     height: 100%;
 }
 
-#question-suggestion-wrapper>div {
+#question-suggestion-wrapper>div:first-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
     height: 100%;
+    margin-top: 10px;
 }
-
-#question-suggestion-icon {
-    width: 5%;
-    margin-left: 40px;
-}   
 
 #question-suggestions {
     width: 95%;
@@ -160,6 +161,14 @@
 
 #question-suggestion-icon {
     padding-right: 20px;
+}
+
+#suggestion-carousel-controller  {
+    height: 20px;
+}
+
+#suggestion-carousel-controller > svg {
+    cursor: pointer;
 }
 
 #mainpane-chatwindow {

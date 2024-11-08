@@ -3,8 +3,9 @@ import { TbWindowMaximize } from "react-icons/tb";
 import { FaStar } from "react-icons/fa";
 import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
-import { APP_MENU, APP_NAME, FAVORITE_QUESTION, FAVORITE_TOPIC } from '../constants/app';
+import { APP_MENU, APP_NAME, FAVORITE_QUESTION, FAVORITE_TOPIC, MAX_SUGGESTIONS, MAX_SUGGESTIONS_PER_PAGE } from '../constants/app';
 import ChatWindow from './ChatWindow';
+import { GoDot, GoDotFill } from "react-icons/go";
 
 
 function MainPane({
@@ -23,6 +24,7 @@ function MainPane({
 }) {
     const [isSubHeaderOpen, updateIsSubHeaderOpen] = useState(false);
     const [activeSubHeaderTab, updateActiveSubHeaderTab] = useState(FAVORITE_QUESTION);
+    const [currentSuggestionPage, updateCurrentSuggestionPage] = useState(0);
     const toggleSubHeaderOpen = () => {
         updateIsSubHeaderOpen(!isSubHeaderOpen);
     }
@@ -58,28 +60,49 @@ function MainPane({
                 </div>
                 <div id="mainpane-subheader" className={`${isSubHeaderOpen ? 'open' : 'close'}`}>
                     <div id="mainpane-subheader-tab">
-                        <div onClick={() => updateActiveSubHeaderTab(FAVORITE_TOPIC)} className={`${activeSubHeaderTab === FAVORITE_TOPIC ? "active": ""}`}>Topics</div>
-                        <div onClick={() => updateActiveSubHeaderTab(FAVORITE_QUESTION)}  className={`${activeSubHeaderTab === FAVORITE_QUESTION ? "active": ""}`}>Questions</div>
+                        {/* <div onClick={() => updateActiveSubHeaderTab(FAVORITE_TOPIC)} className={`${activeSubHeaderTab === FAVORITE_TOPIC ? "active": ""}`}>Topics</div> */}
+                        <div onClick={() => updateActiveSubHeaderTab(FAVORITE_QUESTION)} className={`${activeSubHeaderTab === FAVORITE_QUESTION ? "active" : ""}`}>
+                            <span>Questions</span>
+                            <span>
+                                <FaStar
+                                    size={15}
+                                    color={"white"}
+                                />
+                            </span>
+                        </div>
                     </div>
                     <div id="question-suggestion-wrapper">
-                        <div id="question-suggestion-icon">
-                            <FaStar
-                                size={20}
-                                color={"black"}
-                            />
-                        </div>
-
                         <div id="question-suggestions">
-                            {activeSubHeaderTab === FAVORITE_TOPIC && topicSuggestionList && topicSuggestionList.map((x, ind) => (
+                            {/* {activeSubHeaderTab === FAVORITE_TOPIC && topicSuggestionList && topicSuggestionList.map((x, ind) => (
                                 <div key={`question-suggestion-${ind}`} title={x.topic} onClick={() => !botToRespond && updateSelectedTopic(x.topicId)} >
                                     <div>{x.topic}</div>
                                 </div>
-                            ))}
-                            {activeSubHeaderTab === FAVORITE_QUESTION && questionFavList && questionFavList.map((x, ind) => (
+                            ))} */}
+                            {activeSubHeaderTab === FAVORITE_QUESTION && questionFavList && questionFavList.slice((currentSuggestionPage * MAX_SUGGESTIONS_PER_PAGE), (currentSuggestionPage * MAX_SUGGESTIONS_PER_PAGE) + MAX_SUGGESTIONS_PER_PAGE).map((x, ind) => (
                                 <div key={`question-suggestion-${ind}`} title={x.searchText} onClick={() => !botToRespond && updateSelectedQuestion(x.searchText)} >
                                     <div>{x.searchText}</div>
                                 </div>
                             ))}
+                        </div>
+                        <div id="suggestion-carousel-controller">
+                            {[...Array(MAX_SUGGESTIONS / MAX_SUGGESTIONS_PER_PAGE)].map((_, ind) => 
+                                ind != currentSuggestionPage ?
+                                (
+                                    <GoDot
+                                        size={25}
+                                        color={"orange"}
+                                        onClick={() => updateCurrentSuggestionPage(ind)}
+                                    />
+                                )
+                                :
+                                (
+                                    <GoDotFill 
+                                        size={25}
+                                        color={"orange"}
+                                        onClick={() => updateCurrentSuggestionPage(ind)}
+                                    />
+                                )
+                            )}
                         </div>
                         {/* <div style={{height: '100px', width: '100%', background: 'green'}}></div> */}
                     </div>

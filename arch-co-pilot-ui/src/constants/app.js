@@ -28,6 +28,7 @@ export const LS_FAV_QUESTIONS = "fav_questions_p1";
 export const SIMPLE = "simple";
 export const COMPLEX = "complex";
 
-export const MAX_SUGGESTIONS = 5;
+export const MAX_SUGGESTIONS = 25;
+export const MAX_SUGGESTIONS_PER_PAGE = 5;
 export const MAX_RETRY_ATTEMPTS = 2;
 export const RETRY_INTERVAL = 10 * 1000; //10s
