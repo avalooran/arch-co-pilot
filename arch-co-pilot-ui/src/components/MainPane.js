@@ -55,7 +55,7 @@ function MainPane({
                                 <button className="dropbtn">PowerBI Dashboards</button>
                                 <div className="dropdown-content">
                                     {APP_MENU_1.map((x, ind) => (
-                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank'>
+                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank' rel="noopener noreferrer">
                                             {x.label}
                                         </a>
                                     ))}
@@ -65,7 +65,7 @@ function MainPane({
                                 <button className="dropbtn">COE Resources</button>
                                 <div className="dropdown-content">
                                     {APP_MENU_2.map((x, ind) => (
-                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank'>
+                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank' rel="noopener noreferrer">
                                             {x.label}
                                         </a>
                                     ))}
@@ -102,7 +102,7 @@ function MainPane({
                         </div>
                         <div id="suggestion-carousel-controller">
                             {[...Array(MAX_SUGGESTIONS / MAX_SUGGESTIONS_PER_PAGE)].map((_, ind) =>
-                                ind != currentSuggestionPage ?
+                                ind !== currentSuggestionPage ?
                                     (
                                         <GoDot
                                             size={25}
