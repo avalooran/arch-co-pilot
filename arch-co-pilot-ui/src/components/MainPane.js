@@ -3,9 +3,10 @@ import { TbWindowMaximize } from "react-icons/tb";
 import { FaStar } from "react-icons/fa";
 import { PiAtomFill } from "react-icons/pi";
 import './MainPane.css';
-import { APP_MENU_1, APP_MENU_2, APP_NAME, FAVORITE_QUESTION, FAVORITE_TOPIC, MAX_SUGGESTIONS, MAX_SUGGESTIONS_PER_PAGE } from '../constants/app';
+import { APP_MENU, APP_NAME, FAVORITE_QUESTION, MAX_SUGGESTIONS, MAX_SUGGESTIONS_PER_PAGE } from '../constants/app';
 import ChatWindow from './ChatWindow';
 import { GoDot, GoDotFill } from "react-icons/go";
+import MenuDropdown from '../common/MenuDropdown/MenuDropdown';
 
 function MainPane({
     isSidePaneClose,
@@ -48,31 +49,11 @@ function MainPane({
                         <PiAtomFill
                             size={26}
                         />
-                    </div>
-                    <div id="app-menu">
-                        <div className="navbar">
-                            <div className="dropdown">
-                                <button className="dropbtn">PowerBI Dashboards</button>
-                                <div className="dropdown-content">
-                                    {APP_MENU_1.map((x, ind) => (
-                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank' rel="noopener noreferrer">
-                                            {x.label}
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="dropdown">
-                                <button className="dropbtn">COE Resources</button>
-                                <div className="dropdown-content">
-                                    {APP_MENU_2.map((x, ind) => (
-                                        <a key={`app-menu-${ind}`} href={x.link} target='_blank' rel="noopener noreferrer">
-                                            {x.label}
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </div>                    
+                    <MenuDropdown 
+                        menuOptions={APP_MENU}
+                    />
+                    
                 </div>
                 <div id="mainpane-subheader" className={`${isSubHeaderOpen ? 'open' : 'close'}`}>
                     <div id="mainpane-subheader-tab">
@@ -105,6 +86,7 @@ function MainPane({
                                 ind !== currentSuggestionPage ?
                                     (
                                         <GoDot
+                                            key={ind}
                                             size={25}
                                             color={"orange"}
                                             onClick={() => updateCurrentSuggestionPage(ind)}
@@ -113,6 +95,7 @@ function MainPane({
                                     :
                                     (
                                         <GoDotFill
+                                            key={ind}
                                             size={25}
                                             color={"orange"}
                                             onClick={() => updateCurrentSuggestionPage(ind)}
