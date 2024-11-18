@@ -1,7 +1,7 @@
 export const APP_NAME = "Architecture Co-Pilot";
 export const APP_MENU = [
     {
-        "label": "PowerBI Dashboards",
+        "label": "Architecture Dashboards",
         "type": "dropdown",
         "sub": [
             {
