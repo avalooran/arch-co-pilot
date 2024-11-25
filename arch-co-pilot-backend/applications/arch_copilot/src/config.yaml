@@ -1,0 +1,12 @@
+
+bedrock_agent:
+    primary_agent_name: 'arch-copilot-claude-3-opus'
+    primary_foundation_model: 'us.anthropic.claude-3-opus-20240229-v1:0'
+    secondary_agent_name: 'arch-copilot-claude-3-haiku'
+    secondary_foundation_model: 'anthropic.claude-3-haiku-20240307-v1:0'
+    agent_role_arn: 'arn:aws:iam::051826696040:role/ArchCopilotBedrockAgent'
+    agent_alias: 'archi'
+
+event_details:
+    required_headers: ['eventdatetime', 'sessionid', 'userid', 'conversationtopic']
+
