@@ -7,7 +7,8 @@ import boto3
 from proces_upload_doc import execute_model_response1
 import pandas as pd
 from utils import load_config
-
+from common.session_memory import SessionMemory
+from process_event import ProcessEvent
 
 
 logger = logging.getLogger(__name__)
@@ -19,13 +20,14 @@ s3_c = boto3.client('s3')
 bedrock_runtime = boto3.client(service_name='bedrock-runtime')
 rds_client = boto3.client('rds-data')
 
+sesn_memory = SessionMemory(bedrock_runtime, rds_client, config)
 
 
 
 global response_memory_df
 
 
-response_memory_df = pd.DataFrame(columns = ["answer", "session_id", "user_question"])
+response_memory_df = sesn_memory.initialize_session() 
 print(f"response_memory_df init {response_memory_df.shape}") 
 
 primary_foundation_model = config['bedrock_agent']['primary_foundation_model']
@@ -37,25 +39,9 @@ def lambda_handler(event, context):
     global response_memory_df
     print(f'event --> {event}')
       
-    #validate event
-    #validate_event_format(event)
+    #validate event, Parse body, headers
+    process_event = ProcessEvent(config, event)
     
-    # Parse headers
-    headers = event.get('headers', {})
-    print(f"headers 0 -> {headers}")
-
-    # Parse body
-    try:
-        body = json.loads(event['body'])
-        #body = event['body']
-        print(f"body -> {body}")
-        user_question = body['userQuestion']
-        print(f"type body {type(body)}")
-        print(f"user_question -> {user_question}")
-        adhoc_document_path = body.get('addHocDocumentPath', None)
-        print(f"adhoc_document_path --> {adhoc_document_path}")
-    except (json.JSONDecodeError, KeyError) as e:
-        return response(400, {"error": f"Invalid body or missing required fields: {str(e)}"},headers)
 
     # Process the request 
     try:

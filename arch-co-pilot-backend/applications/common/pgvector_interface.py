@@ -241,6 +241,9 @@ class PGVectorInterface():
         response = self.formatOutputJsonRecords(self.execute_statement(sql_stmnt))
         #print(f"get_table_columns response \n {response}")
         return response
+
+    def get_table_column_names(self, table_name):
+        return [item["column_name"] for item in self.get_table_columns(table_name)]
         
     def format_insert_stmnt(self, table_name, table_columns, vector_column=None):
         values_columns = f""":{table_columns[0]},:{',:'.join(table_columns[1:-1])}"""

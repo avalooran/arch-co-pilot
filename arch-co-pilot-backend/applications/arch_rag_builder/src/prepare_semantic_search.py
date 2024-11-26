@@ -106,7 +106,7 @@ class PrepareSemanticSearch():
         chunk_dtl['embedding_type'] = 'text'
     
         chunk_dtl['embedding_id'] = str(uuid.uuid4())
-        chunk_dtl['multimodal_embedding'] = self.m_embbeding.get_titan_embedingd(self.m_embbeding.remove_stop_words(text), None)
+        chunk_dtl['multimodal_embedding'] = self.m_embbeding.get_titan_embedding(self.m_embbeding.remove_stop_words(text), None)
         return chunk_dtl
     
     def embedd_question(self,response):

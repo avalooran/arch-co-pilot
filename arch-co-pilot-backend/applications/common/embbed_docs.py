@@ -69,7 +69,7 @@ class MultimodalEmbeding():
                 
         return chunk_details
     
-    def get_titan_embedingd(self, text, image_base64):
+    def get_titan_embedding(self, text, image_base64):
         body = json.dumps(
             {
                 "inputText": text,

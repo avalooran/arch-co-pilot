@@ -1,10 +1,10 @@
 import json
 import pandas as pd
 from embbed_docs import MultimodalEmbeding
+from pgvector_interface import PGVectorInterface
 
 
-
-class SessionMemory(DocPGVector):
+class SessionMemory(PGVectorInterface):
     def __init__(self,bedrock_runtime, rds_client, config):
         super().__init__(rds_client, config) 
         self.m_embbeding = MultimodalEmbeding(bedrock_runtime, config)
@@ -22,7 +22,7 @@ class SessionMemory(DocPGVector):
         self.session_memory_table = value
     @property
     def session_columns(self):
-        return self.config['session_details']['session_columns']
+        return self.get_table_column_names(self.session_memory_table)
         
     @session_columns.setter
     def session_columns(self, value):
@@ -72,6 +72,7 @@ class SessionMemory(DocPGVector):
                                   """
         response_prompt = self.llm_prompt.execute_text_prompt(prompt_instructions)
         response_prompt = re.sub(r'[\n\r\t]', ' ', response_prompt)
+        return response_prompt
 
 
     def get_similar_question_response(self, similarity_vector, min_threshold=0.9, top_n=1):

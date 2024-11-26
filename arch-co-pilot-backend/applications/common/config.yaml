@@ -33,6 +33,9 @@ session_memory_table:
 
 session_details:
    session_length: 10
+
+rag_response_hist_table:
+    name: 'rag_question_response_history '
     
 models:
     main_model: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'

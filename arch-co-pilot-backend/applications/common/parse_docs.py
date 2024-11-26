@@ -301,6 +301,8 @@ class ParsePDFDocTextImages():
     
         return page_details, {'chunk_number': chunk_number, 'accumulated_text': accumulated_text, 'accumulated_images': accumulated_images}
 
+    def proces_pdf(self):
+        self.page_details, self.accumulated_chunks, self.doc_text  = self.pdf_parser_inst.process_pdf_pages()
     
     @timeit
     def pdf_to_base64_pngs(self, quality=75, max_size=(1024, 1024)):
