@@ -1,7 +1,8 @@
 import json
 import pandas as pd
-from embbed_docs import MultimodalEmbeding
-from pgvector_interface import PGVectorInterface
+from common.embbed_docs import MultimodalEmbeding
+from common.pgvector_interface import PGVectorInterface
+from common.llm_prompts import LLMPrompts
 
 
 class SessionMemory(PGVectorInterface):

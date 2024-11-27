@@ -3,7 +3,7 @@ import boto3
 from utils import timeit
 import pandas as pd
 from pandas.io.json._normalize import nested_to_record 
-import datetime
+from datetime import datetime
 from common.parse_docs import ParsePDFDocTextImages as PDFDocParserTI
 from common.embbed_docs import MultimodalEmbeding
 from common.llm_prompts import LLMPrompts
@@ -23,9 +23,11 @@ class ProcessRequest(ProcessEvent):
         self.m_embbeding = MultimodalEmbeding(bedrock_runtime, config)
         self.llm_prompt = LLMPrompts(bedrock_runtime, config)
         self.doc_pgvctr = DocPGVector(rds_client, config)
+        self.primary_model = self.config['models']['primary_model']
+        self.secondary_model = self.config['models']['secondary_model']
 
 
-    def process_request():
+    def process_request(self):
         try:
             run_answer = False
             print(f"response_memory_df handler 1 {self.response_memory_df.shape[0]}") 
@@ -53,7 +55,7 @@ class ProcessRequest(ProcessEvent):
             return response(400, {"error": {str(e)}, "event": event},self.headers)
 
 
-    def execute_model_response():
+    def execute_model_response(self):
  
         accumulated_text_chunks = [{'chunk_number': 0, 'accumulated_text': ''} ,{'chunk_number': 0, 'accumulated_text': ''}]
         accumulated_image_chunks = {}
@@ -75,13 +77,11 @@ class ProcessRequest(ProcessEvent):
             print(f"contexts_size is -> {contexts_size}")
             if contexts_size > 0:
                 question_type = 'question_context'  
-        model_id = "us.anthropic.claude-3-opus-20240229-v1:0"
         
-        response_body, invoke_error = proces_pdf_question(user_question, bedrock_runtime, session_id, accumulated_text_chunks, accumulated_image_chunks, model_id, question_type)
+        response_body, invoke_error = proces_pdf_question(accumulated_text_chunks, accumulated_image_chunks, self.primary_model, question_type)
         if invoke_error:
             invoke_error = None
-            model_id = 'anthropic.claude-3-haiku-20240307-v1:0'
-            response_body, invoke_error = proces_pdf_question(user_question, bedrock_runtime, session_id, accumulated_text_chunks, accumulated_image_chunks,model_id, question_type)
+            response_body, invoke_error = proces_pdf_question(accumulated_text_chunks, accumulated_image_chunks,self.secondary_model, question_type)
             if invoke_error:
                 logger.error("A client error occurred: %s", invoke_eror)
                 print("A client error occured: " + invoke_eror)
@@ -89,79 +89,153 @@ class ProcessRequest(ProcessEvent):
         return response_body
 
 
-    def get_question_context():
+    def get_question_context(self):
         embed_question_vector = []
         contexts = ''
         print(f"user_question -> {self.user_question}")
         user_question = self.m_embbeding.remove_stop_words(self.user_question)
         embed_question_vector = self.m_embbeding.get_titan_embedding(user_question, None)
 
-        contexts = self.doc_pgvctr.get_doc_cosine_topn_similar_records(5, embed_question_vector, min_threshold=0.6)
-        print(f"contexts -> {contexts}")
-        contexts_size = len(contexts)
+        contexts_dict = self.doc_pgvctr.get_doc_cosine_topn_similar_records(5, embed_question_vector, min_threshold=0.6)
+        print(f"contexts -> {contexts_dict}")
+        contexts_size = len(contexts_dict)
         print(f"context size -> {contexts_size}")
+
+        #save context search in RAG
+        columns = self.doc_pgvctr.get_table_column_names(self.rag_response_hist_table)
         if contexts_size > 0:
-            columns = self.doc_pgvctr.get_table_column_names(self.rag_response_hist_table)
-            contexts_dict = [dict(zip(columns, row)) for row in contexts]
-            
-        
+            response_df = pd.DataFrame(contexts_dict)
+        else:
+            response_df = pd.DataFrame(columns=columns)
+        response_dict['user_id'] = self.user_id
+        response_dict['session_id'] = self.session_id
+        response_dict['user_question'] = self.user_question
+        response_dict['response_timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        response_dict['response_date'] = datetime.now().strftime("%Y-%m-%d")
+        sql_parameter_sets = self.format_records(response_dict, self.rag_response_hist_table)
+        insrt_stmnt = self.format_insert_stmnt(self.rag_response_hist_table, columns) 
+        records = self.batch_execute_statement(insrt_stmnt, sql_parameter_sets)
+
+
+        if contexts_size > 0:
+            #acumulate al responses into one context
             accumulated_chunks_df = pd.DataFrame(contexts_dict)
             accumulated_chunks_df['chunk_number'] = 1
-            accumulated_chunks0_df = pd.DataFrame([{'chunk_number': 0, 'accumulated_text': '', 'accumulated_images': {"source": {"type": "base64", "media_type": "image/jpeg",
-                                                "data": '' }}}])
-            #print(f"accumulated_chunks0_df \n {accumulated_chunks0_df}")
-            accumulated_chunks_df['accumulated_images'] = accumulated_chunks_df.apply(lambda row: {"type":  "image",  
-                                                "source": {"type": "base64", "media_type": "image/jpeg",
-                                                "data": row['image_base64'] },
-                                                "image_path": row['s3_image_path'] }, axis=1)
-                                                
-            accumulated_chunks_df = accumulated_chunks_df[['chunk_number', 'accumulated_text', 'accumulated_images']]                                    
-            #print(f"accumulated_chunks_df before concat \n {accumulated_chunks_df}")
-            accumulated_chunks_df = pd.concat([accumulated_chunks0_df , accumulated_chunks_df]).reset_index(drop=True)     
-            #print(f"accumulated_chunks_df after concat \n {accumulated_chunks_df}")
-            accumulated_image_chunks_df = accumulated_chunks_df                                    
-            accumulated_image_chunks_df = accumulated_image_chunks_df.loc[accumulated_image_chunks_df['accumulated_images'].apply(lambda x: x['source']['data']) != 'None']                
-            #print(f"accumulated_image_chunks_df  after filter\n {accumulated_image_chunks_df}")
-            accumulated_text_df = accumulated_chunks_df.groupby('chunk_number', as_index=False).agg({'accumulated_text': ' '.join})
-            #print(f"accumulated_text_df -\n {accumulated_text_df}")
-            accumulated_text_chunks = accumulated_text_df[['chunk_number','accumulated_text']].to_dict('records') 
-            #print(f"accumulated_text_chunks \n {accumulated_text_chunks}")
-            accumulated_image_chunks = accumulated_image_chunks_df[['chunk_number','accumulated_images']].to_dict('records')
-            print(f"image size -> {accumulated_image_chunks_df.shape}")
+
+            accumulated_chunks_df = accumulated_chunks_df[['chunk_number', 'image_description', 'image_base64', 'document_source_link']] 
+            accumulated_chunks_df = accumulated_chunks_df.groupby("chunk_number").apply(
+                                            lambda group: pd.Series({
+                                            "accumulated_text": " ".join(group["image_description"]),  # Concatenate descriptions
+                                            "document_source_links": list(group["document_source_link"].unique()),  # Unique links
+                                            "accumulated_images": [
+                                                {"type": "image","source": {"type": "base64", "media_type": "image/jpeg","data": row["image_base64"]}
+                                                } for _, row in group.iterrows()], 
+                                        })).reset_index()
+
         else:
-            accumulated_text_chunks = [{'chunk_number': 0, 'accumulated_text': ''} ,{'chunk_number': 0, 'accumulated_text': ''}]
-            accumulated_image_chunks = {}
+            accumulated_chunks_df = [{'chunk_number': 0, 'accumulated_text': '', 'accumulated_images': {}}]
+
+        return accumulated_chunks_df, contexts_size
+
+
+    def proces_doc_question(self, accumulated_text_chunks, accumulated_image_chunks,self.secondary_model, question_type):
+        max_tokens = self.config['models']['max_tokens']
+        model_responses = []
+
+        for indx, accumulated_text in enumerate(accumulated_text_chunks):
+            context = accumulated_text['accumulated_text']
+            chunk_number = accumulated_text['chunk_number']
             
-        #print(f"accumulated_text_chunks in get_question_context -> {accumulated_text_chunks }")
-        #print(f"accumulated_image_chunks in get_question_context -> {accumulated_image_chunks}")
-        return accumulated_text_chunks, accumulated_image_chunks, contexts_size
+            if indx == 0:
+                continue 
+            if len(accumulated_image_chunks) > 0:
+                accumulated_images_for_chunk = next(item['accumulated_images'] for item in accumulated_image_chunks if item['chunk_number'] == chunk_number)
+                images_df = pd.DataFrame(accumulated_images_for_chunk)
+            else:
+                doc_images = []
 
+            return_image_format = """text_response_ended@[{"image_number": image_number, "image_path": "image path",
+            "image_description": "description", "image_summary": "summary"}]"""
 
+            input_text = f"""
+                        0.  Answer the question from the user {self.user_question} .\
+                        1. Be consize and precise. Maximum 9 paragraphs are enough.\
+                        2. To answer the user's question, Use the folowing context to answer {context}.\
+                            Pay atention to text in document first, and then images.
+                        3. If The context contains images, then the image path is included.\
+                        image path is included in this format 'image_path': './extracted_images/page_4_block_2.png'\
+                        4. if images/diagrams are included in context, please retun image number starting with 0 and image path which help answer the question in JSON format.\
+                            to get the image path corect, correlate image number you recieve with image path .
+                        5. when returning JSON of image paths, include description and sumary of image. return using format {return_image_format}\
+                            Please return a valid json .
+                        6. if the context contains images/diagrams,Include JSON with image paths after answerring the question.\
+                        7. Answer the question first and then return {return_image_format}\
+                        8. only include text_response_ended@ once. after text_response_ended@ return all images/diagram in {return_image_format}, \
+                            do not include double quotes in your answer.
+                        9.If you do not know the anser, say I do not know\
+                        """
+            message = {"role": "user",
+                    "content": [
+                        *doc_images,
+                        {"type": "text", "text": input_text}
+                        ]}
+            
 
+            messages = [message]
+
+            body = json.dumps(
+                {
+                "anthropic_version": "bedrock-2023-05-31",
+                "system": "You are a honest and helpful bot.Be consize",
+                "max_tokens": max_tokens,
+                "temperature": 0.0,
+                "top_k": 250, 
+                "top_p": 1, 
+                "messages": messages
+                }
+            )
+
+            
+            response = bedrock_runtime.invoke_model(body=body, modelId=model_id)
+            response_body = ""
+
+            response_body = json.loads(response.get('body').read())
+            response_body = response_body['content'][0]['text']
+            
+            if ('text_response_ended@' in response_body) and (len(accumulated_image_chunks) > 0):
+                text_response = response_body.split('text_response_ended@')[0]
+                image_response = json.loads(response_body.split('text_response_ended@')[1])
+                image_data_df = pd.DataFrame(image_response)
+                images_json_struct = json.loads(images_df.to_json(orient="records"))
+                images_df_flat = pd.json_normalize(images_json_struct)
+                image_response = pd.merge(image_data_df, images_df_flat[['image_path', 'source.data']], on='image_path', how='inner').rename(columns={"source.data": "image_base64"}).to_dict(orient='records')
+            else:
+                if ('text_response_ended@' in response_body):
+                    text_response = response_body.split('text_response_ended@')[0]
+                else:
+                    text_response = response_body
+                image_response = [{}]
+                
+            question_response = {'text_response': text_response, 'image_response': image_response}
+            model_responses.append(question_response)
+            
+        return model_responses
+
+    
 
     
     def proces_pdf_question(user_question, bedrock_runtime,  session_id, accumulated_text_chunks, accumulated_image_chunks, model_id,question_type):
         try:
-            max_tokens = 10000
-
+            max_tokens = self.config['models']['max_tokens']
             model_responses = []
             
             print(f"question_type -> {question_type}")
 
-            #print(f"len of accumulated_text_chunks {len(accumulated_text_chunks)}")
-            #print(f"accumulated_text_chunks \n{accumulated_text_chunks}")
-            #print(f"accumulated_image_chunks\n {accumulated_image_chunks}")
-        
             for indx, accumulated_text in enumerate(accumulated_text_chunks):
                 context = accumulated_text['accumulated_text']
                 
                 chunk_number = accumulated_text['chunk_number']
                 
-                #print(f"chunk_number --> {chunk_number}")
-                #print(f"accumulated_text\n{accumulated_text}")
-
-                #accumulated_image_chunks = []
-                #images_df = pd.DataFrame()
                 
                 if indx == 0:
                     continue 
@@ -175,12 +249,7 @@ class ProcessRequest(ProcessEvent):
                             accumulated_images_for_chunk = next(item['accumulated_images'] for item in accumulated_image_chunks if item['chunk_number'] == chunk_number)
                             images_df = pd.DataFrame(accumulated_images_for_chunk)
                         else:
-                            #print("*********************accumulated_images_for_chunk**************************")
-                            #print(accumulated_image_chunks)
-                            #print("*********************accumulated_images_for_chunk**************************")
-                            #print("*********************images_df**************************")
-                            #images_df = pd.DataFrame(accumulated_images_for_chunk)
-                            #images_df = pd.DataFrame(accumulated_image_chunks)
+                       
                             
                             images_df = pd.json_normalize(accumulated_image_chunks, max_level=1) 
                             images_df = images_df[images_df['chunk_number'] == chunk_number]
@@ -190,10 +259,7 @@ class ProcessRequest(ProcessEvent):
         
                             print(images_df.columns)  
                         
-                        #print(f"accumulated_images {images_df[['accumulated_images']['image_path']].columns}")
-                        #print("*********************images_df**************************")
-                        #print(str(images_df[['image_path']].to_dict('records')))
-                        #print("*********************images_df**************************")
+                  
                         context = context + str(images_df[['image_path']].to_dict('records'))
                         images = images_df[['type', 'source']].to_dict('records') 
                         print(f"images -> \n {images_df.columns}") 

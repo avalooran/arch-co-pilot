@@ -41,7 +41,7 @@ class ProcessEvent():
 
     @property
     def body(self):
-        return json.loads(event.get('body', {}))
+        return json.loads(self.event.get('body'))
         
     @body.setter
     def body(self, value):
@@ -114,10 +114,7 @@ class ProcessEvent():
         return False
 
     def validate_event_format(self):
-        # Ensure the method is POST
-        if self.event['httpMethod'] != 'POST':
-            return self.format_response(405, 'Method Not Allowed')
-            
+    
         event_invalid = self.validate_event_header()
         if event_invalid:
             return event_invalid

@@ -2,8 +2,8 @@
 import boto3
 import json
 import pandas as pd
-from utils import timeit
-from pgvector_interface import PGVectorInterface
+from common.utils import timeit
+from common.pgvector_interface import PGVectorInterface
 
 
 class DocPGVector(PGVectorInterface):

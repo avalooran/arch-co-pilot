@@ -1,5 +1,5 @@
 import json
-from utils import timeit
+from common.utils import timeit
 
 
 class LLMPrompts():
@@ -11,7 +11,7 @@ class LLMPrompts():
         if model_id:
             self.model_id = model_id
         else:
-            self.model_id = config['models']['main_model']
+            self.model_id = config['models']['primary_model']
        
     @timeit 
     def execute_image_prompt(self, base64_encoded_pngs, model_id):

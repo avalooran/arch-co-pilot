@@ -1,14 +1,14 @@
 import json
 import boto3
-from utils import timeit
+from common.utils import timeit
 import uuid
 import pandas as pd
 from pandas.io.json._normalize import nested_to_record 
 import datetime
-from parse_docs import ParsePDFDocTextImages as PDFDocParserTI
-from embbed_docs import MultimodalEmbeding
-from llm_prompts import LLMPrompts
-from pgvector_interface import PGVectorInterface
+from common.parse_docs import ParsePDFDocTextImages as PDFDocParserTI
+from common.embbed_docs import MultimodalEmbeding
+from common.llm_prompts import LLMPrompts
+from common.pgvector_interface import PGVectorInterface
 from prepare_semantic_search import PrepareSemanticSearch 
 
 

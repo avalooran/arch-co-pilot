@@ -4,17 +4,22 @@ import logging
 from datetime import datetime
 from botocore.exceptions import ClientError
 import boto3
-from proces_upload_doc import execute_model_response1
 import pandas as pd
-from utils import load_config
+
 from common.session_memory import SessionMemory
+from common.utils import load_config
 from process_event import ProcessEvent
+
 
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-config = load_config("config.yaml")
+common_config = load_config("common/config.yaml")
+app_config = load_config("arch_copilot/config.yaml")
+config = {**common_config, **app_config}
+
+print(f"config --- \n {config}")
 
 s3_c = boto3.client('s3')
 bedrock_runtime = boto3.client(service_name='bedrock-runtime')
@@ -26,12 +31,9 @@ sesn_memory = SessionMemory(bedrock_runtime, rds_client, config)
 
 global response_memory_df
 
-
 response_memory_df = sesn_memory.initialize_session() 
-print(f"response_memory_df init {response_memory_df.shape}") 
-
-primary_foundation_model = config['bedrock_agent']['primary_foundation_model']
-secondary_foundation_model = config['bedrock_agent']['secondary_foundation_model']
+if response_memory_df:
+    print(f"response_memory_df init {response_memory_df.shape}") 
 
 
 
@@ -42,67 +44,10 @@ def lambda_handler(event, context):
     #validate event, Parse body, headers
     process_event = ProcessEvent(config, event)
     
-
-    # Process the request 
-    try:
-        run_answer = False
-        session_id = headers['sessionid']
-        print(f"response_memory_df handler 1 {response_memory_df.shape[0]}") 
-        if response_memory_df.shape[0] > 0:
-            response_user_memory_df = response_memory_df[(response_memory_df['session_id'] == session_id) & (response_memory_df['user_question'] == user_question)]
-            if response_memory_df.shape[0] > 0:
-                print(f"response_user_memory ->  {response_user_memory_df[['answer']].to_dict('records')}") 
-                answer = response_user_memory_df[['answer']].to_dict('records') 
-                if len(answer) > 0:
-                    answer = answer[0]['answer']
-                    print(f"memorised answer {answer}")
-                else:
-                    run_answer = True
-            else:
-                run_answer = True
-        else:
-            run_answer = True
-            
-        if run_answer: 
-            answer = execute_model_response1(bedrock_runtime, rds_client, session_id, user_question, adhoc_document_path)
-            response_answer_memory_df = pd.DataFrame([{"answer": answer, "session_id": session_id, "user_question": user_question}])
-            response_memory_df = pd.concat([response_answer_memory_df, response_memory_df]).reset_index(drop=True) 
-        print(f"response_memory_df handler 2 {response_memory_df.shape[0]}") 
-    except ClientError as e:
-        return response(400, {"error": {str(e)}, "event": event},headers)
-        
-    # Construct response body
-    response_body = {
-        "answer": answer,
-        "event": event 
-    } 
-
-    # Return successful response
-    return response(200, response_body,headers)
-
-
-# Utility function to generate response with CORS headers
-def response(status_code, body,headers):
-    # Parse headers
-    
-    event_datetime = headers['eventdatetime']
-    session_id = headers['sessionid']
-    user_id = headers['userid']
-    conversation_topic = headers['conversationtopic']
-        
-    return {
-        "statusCode": status_code,
-        "body": json.dumps(body),
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",  # CORS header to allow all origins
-            "Access-Control-Allow-Headers": "Content-Type,eventDatetime,sessionId,userId,conversationTopic",
-            "Access-Control-Allow-Methods": "POST",  # Allow POST method
-            "sessionId": session_id,
-            "userId": user_id,
-            "conversationTopic": conversation_topic,
-            "eventDatetime": datetime.utcnow().isoformat() + 'Z'
-        }
-    }
  
- 
+event = {"headers": {"conversationtopic": "abc", "eventdatetime": "abc", "sessionid": "abc", "userid": "abc"}, 
+          "body": '{"userQuestion": "What is Data Mesh?", \
+          "addHocDocumentPath": "s3://arch-copilot-files-store/input_files/Data_Mesh_Architecture_latest.pdf"}'}
+context = ''
+
+lambda_handler(event, context)

@@ -15,6 +15,7 @@ def timeit(func):
     return timeit_wrapper
 
 def load_config(config_file):
+    print(f"load_config config_file -> {config_file}")
     with open(config_file, 'r') as stream:
         try:
             return yaml.safe_load(stream)

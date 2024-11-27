@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "arch_rag_builder",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/arch-co-pilot-backend/applications",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/arch-co-pilot-backend/applications"
+            }
+        },
+        {
+            "name": "arch_copilot",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/arch-co-pilot-backend/applications",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/arch-co-pilot-backend/applications"
+            }
+        }
+    ]
+}
