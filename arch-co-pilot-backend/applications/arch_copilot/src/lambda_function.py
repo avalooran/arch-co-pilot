@@ -9,6 +9,7 @@ import pandas as pd
 from common.session_memory import SessionMemory
 from common.utils import load_config
 from process_event import ProcessEvent
+from process_request import ProcessRequest
 
 
 
@@ -27,22 +28,20 @@ rds_client = boto3.client('rds-data')
 
 sesn_memory = SessionMemory(bedrock_runtime, rds_client, config)
 
-
-
 global response_memory_df
 
-response_memory_df = sesn_memory.initialize_session() 
-if response_memory_df:
-    print(f"response_memory_df init {response_memory_df.shape}") 
+response_memory_df = sesn_memory.session_memory_df
 
-
+print(f"response_memory_df init1 {response_memory_df.shape}") 
 
 def lambda_handler(event, context):
     global response_memory_df
     print(f'event --> {event}')
       
     #validate event, Parse body, headers
-    process_event = ProcessEvent(config, event)
+    #proc_event = ProcessEvent(config, event)
+    proc_request = ProcessRequest(bedrock_runtime, rds_client, s3_c, config, event, response_memory_df)
+    answer = proc_request.process_request()
     
  
 event = {"headers": {"conversationtopic": "abc", "eventdatetime": "abc", "sessionid": "abc", "userid": "abc"}, 

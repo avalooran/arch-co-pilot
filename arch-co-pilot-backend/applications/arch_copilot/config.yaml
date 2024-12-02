@@ -8,3 +8,8 @@ models:
 event_details:
     required_headers: ['eventdatetime', 'sessionid', 'userid', 'conversationtopic']
 
+output_details:
+    output_bucket: "arch-copilot-files-store"
+    output_key: "output_files"
+
+

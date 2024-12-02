@@ -10,6 +10,7 @@ class SessionMemory(PGVectorInterface):
         super().__init__(rds_client, config) 
         self.m_embbeding = MultimodalEmbeding(bedrock_runtime, config)
         self.llm_prompt = LLMPrompts(bedrock_runtime, config)
+        self.initialize_session()
 
     
     @property
@@ -42,6 +43,7 @@ class SessionMemory(PGVectorInterface):
         self.session_length = value
 
     def initialize_session(self):
+        print(f"initialize_session")
         self.session_memory_df = pd.DataFrame(columns = self.session_columns)
 
     def get_similar_question_response(self,  user_question):
