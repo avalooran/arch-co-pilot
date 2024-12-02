@@ -14,7 +14,7 @@ import re
 import uuid
 import pypdfium2 as pdfium
 from functools import wraps
-from utils import timeit
+from common.utils import timeit
 
 
 logger = logging.getLogger(__name__)

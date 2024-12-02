@@ -6,9 +6,9 @@ import datetime
 import json 
 import re
 import itertools
-from embbed_docs import MultimodalEmbeding
-from llm_prompts import LLMPrompts
-from utils import timeit
+from common.embbed_docs import MultimodalEmbeding
+from common.llm_prompts import LLMPrompts
+from common.utils import timeit
     
  
 class PrepareSemanticSearch():
@@ -20,7 +20,7 @@ class PrepareSemanticSearch():
         if model_id:
             self.model_id = model_id
         else:
-            self.model_id = config['models']['main_model']
+            self.model_id = config['models']['primary_model']
         self.llm_prompt = LLMPrompts(bedrock_runtime, config)
         self.m_embbeding = MultimodalEmbeding(bedrock_runtime, config)
         
@@ -38,7 +38,10 @@ class PrepareSemanticSearch():
             res_format =  res_format + f'"question": "question {i+1} text", "answer": "answer {i+1}", "key_words": {keywords_list}' + '\}'
             response_format_list.append(res_format) 
          
-        response_format = f"""{str(response_format_list).replace("'{",'{').replace("\\\}'",'}')}"""
+        #response_format = f"""{str(response_format_list).replace("'{",'{').replace("\\\}'",'}')}"""
+        response_format = f"""{str(response_format_list).replace("'{",'{').replace("}'",'}')}""" 
+        print(f"get_question_instructions response_format {response_format}")
+
 
         prompt_instructions = f"""1. give me {question_number} questions/answers and key words about this page \n
                                       2. give me exactly {keywords_number} key words for each question/answer, first key word should be the {category} in this document \n

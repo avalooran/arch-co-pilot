@@ -8,13 +8,13 @@ import datetime
 from common.parse_docs import ParsePDFDocTextImages as PDFDocParserTI
 from common.embbed_docs import MultimodalEmbeding
 from common.llm_prompts import LLMPrompts
-from common.pgvector_interface import PGVectorInterface
+from common.doc_pgvector import DocPGVector
 from prepare_semantic_search import PrepareSemanticSearch 
 
 
 
 
-class StoreEmbeddings(PGVectorInterface):
+class StoreEmbeddings(DocPGVector):
     def __init__(self, s3_c,bedrock_runtime, rds_client, config, s3_pdf_path,s3_output_folder):
         """
         class to store embeddings
@@ -27,7 +27,7 @@ class StoreEmbeddings(PGVectorInterface):
         self.m_embbeding = MultimodalEmbeding(bedrock_runtime, config)
         self.llm_prompt = LLMPrompts(bedrock_runtime, config)
         self.semantic_search = PrepareSemanticSearch(bedrock_runtime, config)
-        self.model_id = config['models']['main_model']
+        self.model_id = config['models']['primary_model']
         self.proces_pdf()
          
     def get_table_cols(self, table_type):

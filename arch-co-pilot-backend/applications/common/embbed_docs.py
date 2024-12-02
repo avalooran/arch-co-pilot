@@ -46,7 +46,7 @@ class MultimodalEmbeding():
             
             for image_indx, image_dict in enumerate(chunk['accumulated_images']):
                 image_base64 = image_dict["source"]["data"]
-                multi_modal_embbeding = self.get_titan_embedingd(embedding_text, image_base64)
+                multi_modal_embbeding = self.get_titan_embedding(embedding_text, image_base64)
                 chunk_c['embedding_type'] = embbeding_type
                 chunk_c['image_description'] = text 
                 chunk_c['chunk_number'] = chunk_number
@@ -57,7 +57,7 @@ class MultimodalEmbeding():
                 chunk_details.append(chunk_c)
                 
             if image_indx == 0:
-                multi_modal_embbeding = self.get_titan_embedingd(embedding_text, None)
+                multi_modal_embbeding = self.get_titan_embedding(embedding_text, None)
                 chunk_c['embedding_type'] = embbeding_type
                 chunk_c['image_description'] = text
                 chunk_c['chunk_number'] = chunk_number
