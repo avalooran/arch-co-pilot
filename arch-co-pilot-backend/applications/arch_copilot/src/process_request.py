@@ -7,15 +7,16 @@ from datetime import datetime
 from common.utils import timeit
 from common.parse_docs import ParsePDFDocTextImages as PDFDocParserTI
 from common.embbed_docs import MultimodalEmbeding
-from common.llm_prompts import LLMPrompts
+from common.llm_prompts import LLMPrompts, AsyncBedrockLLMHandler
 from common.doc_pgvector import DocPGVector
 from common.s3_interface import S3Interface
 from process_event import ProcessEvent
+from model_response import AsyncModelResponse
 
 
 
 
-class ProcessRequest(ProcessEvent):
+class AsyncProcessRequest(ProcessEvent):
     def __init__(self,bedrock_runtime, rds_client, s3_c, config, event, response_memory_df):
         super().__init__(config, event) 
         self.bedrock_runtime = bedrock_runtime
@@ -26,11 +27,13 @@ class ProcessRequest(ProcessEvent):
         self.llm_prompt = LLMPrompts(bedrock_runtime, config)
         self.doc_pgvctr = DocPGVector(rds_client, config)
         self.s3i = S3Interface(s3_c, config)
+        self.async_model_response = AsyncModelResponse(bedrock_runtime, config)
         self.primary_model = self.config['models']['primary_model']
         self.secondary_model = self.config['models']['secondary_model']
 
 
-    def process_request(self):
+    async def process_request_stream(self):
+        answer = ''
         try:
             run_answer = False
             print(f"response_memory_df handler 1 {self.response_memory_df.shape[0]}") 
@@ -50,24 +53,54 @@ class ProcessRequest(ProcessEvent):
                 run_answer = True
                 
             if run_answer: 
-                answer = self.execute_model_response()
-                response_answer_memory_df = pd.DataFrame([{"answer": answer, "session_id": session_id, "user_question": user_question}])
-                self.response_memory_df = pd.concat([response_answer_memory_df, self.response_memory_df]).reset_index(drop=True) 
+                async for response_part in self.execute_model_response_stream():
+                    answer = answer + ''.join(response_part)
+                    yield response_part
+                # Update session memory
+                response_memory_entry = pd.DataFrame([{"answer": answer,"session_id": self.session_id,"user_question": self.user_question}])
+                self.response_memory_df = pd.concat([response_memory_entry, self.response_memory_df]).reset_index(drop=True)
+            print(f"answer is \n {answer}")
             print(f"response_memory_df handler 2 {self.response_memory_df.shape[0]}") 
         except ClientError as e:
-            return response(400, {"error": {str(e)}, "event": event},self.headers)
+            yield self.format_response(400, str(e))
+            return
 
-        return answer
+      
 
-    def execute_model_response(self):
- 
+        
+    async def execute_model_response_stream(self):
+        print(f"execute_model_response_stream")
+        """
+        Process the request and generate a response in streaming mode.
+        """
         accumulated_text_chunks = [{'chunk_number': 0, 'accumulated_text': ''} ,{'chunk_number': 0, 'accumulated_text': ''}]
         accumulated_image_chunks = {}
-        
+        accumulated_text_chunks, accumulated_image_chunks, contexts_size = self.prepare_chunks()
+
+        question_type = 'summarize' if self.adhoc_document_path else 'question'
+        model_id = self.primary_model
+
+        if contexts_size > 0:
+            question_type = 'question_context'  
+
+        """
         if self.adhoc_document_path:
-            question_type = 'summarize'
-            contexts_size = 100000
-            #proces pdf to extract text and images
+            async for response_part in self.async_model_response.process_doc_question_stream(
+                accumulated_text_chunks, accumulated_image_chunks, model_id, self.user_question
+            ):
+                yield response_part
+        """
+
+        if self.adhoc_document_path:
+            async for response_part in self.async_model_response.process_text_question_stream(
+                self.doc_text, model_id, self.user_question):
+                yield response_part
+
+    def prepare_chunks(self):
+        """
+        Prepare accumulated text and image chunks based on the request.
+        """
+        if self.adhoc_document_path:
             doc_bucket , doc_key = self.s3i.parse_s3_uri(self.adhoc_document_path)
             s3_output_folder = 's3://' + doc_bucket + '/' + self.config['output_details']['output_key']
             self.pdf_parser_inst = PDFDocParserTI(self.s3_c, self.config, self.adhoc_document_path,s3_output_folder)
@@ -76,32 +109,17 @@ class ProcessRequest(ProcessEvent):
             accumulated_chunks_df = pd.DataFrame(self.accumulated_chunks)
             accumulated_text_chunks = accumulated_chunks_df[['chunk_number','accumulated_text']].to_dict('records') 
             accumulated_image_chunks = accumulated_chunks_df[['chunk_number','accumulated_images']].to_dict('records') 
-
-            response_body, invoke_error = proces_pdf_question(accumulated_text_chunks, accumulated_image_chunks, self.primary_model, question_type)
-            if invoke_error:
-                invoke_error = None
-                response_body, invoke_error = proces_pdf_question(accumulated_text_chunks, accumulated_image_chunks,self.secondary_model, question_type)
-                if invoke_error:
-                    logger.error("A client error occurred: %s", invoke_eror)
-                    print("A client error occured: " + invoke_eror)
-            
+            contexts_size = 0
         else:
             question_type = 'question'
             print(f"caling get_question_context")
-            accumulated_text_chunks, accumulated_image_chunks, contexts_size = self.get_question_context(bedrock_runtime, rds_client, user_question)
+            accumulated_image_chunks = {}
+            accumulated_chunks_df, contexts_size = self.get_question_context(bedrock_runtime, rds_client, user_question)
             print(f"contexts_size is -> {contexts_size}")
             if contexts_size > 0:
                 question_type = 'question_context'  
 
-        response_body, invoke_error = proces_doc_question(accumulated_text_chunks, accumulated_image_chunks, self.primary_model, question_type)
-        if invoke_error:
-            invoke_error = None
-            response_body, invoke_error = proces_doc_question(accumulated_text_chunks, accumulated_image_chunks,self.secondary_model, question_type)
-            if invoke_error:
-                logger.error("A client error occurred: %s", invoke_eror)
-                print("A client error occured: " + invoke_eror)
-        
-        return response_body
+        return accumulated_text_chunks, accumulated_image_chunks, contexts_size
 
 
     def get_question_context(self):

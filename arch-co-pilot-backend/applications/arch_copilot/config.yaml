@@ -12,4 +12,8 @@ output_details:
     output_bucket: "arch-copilot-files-store"
     output_key: "output_files"
 
+chunk_dtls:
+    chunk_size: 6
+    chunk_overlap_percent: 10
+
 

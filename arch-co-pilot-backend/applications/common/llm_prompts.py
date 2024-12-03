@@ -1,4 +1,6 @@
 import json
+import botocore
+import asyncio
 from common.utils import timeit
 
 
@@ -135,4 +137,46 @@ class LLMPrompts():
         response_prompt = response_prompt["content"][0]["text"].replace('{','').replace('}','')
 
         return  response_prompt
+
+    
+
+class AsyncBedrockLLMHandler:
+    def __init__(self,bedrock_runtime, config):
+        """
+        Initialize the class with configuration.
+        :param config: Dictionary containing models and other configurations.
+        """
+        self.config = config
+        self.bedrock_runtime = bedrock_runtime
+
+    async def invoke_bedrock_stream(self, model_id, body):
+        """
+        Asynchronously invoke the Bedrock model in streaming mode.
+        :param model_id: ID of the model to invoke.
+        :param body: Payload to send to the Bedrock API.
+        :return: Async generator yielding responses.
+        """
+        def sync_invoke_model_stream():
+            return self.bedrock_runtime.invoke_model_with_response_stream(
+                modelId=model_id,
+                contentType="application/json",
+                body=body
+            )
+
+        response = await asyncio.to_thread(sync_invoke_model_stream)
+        stream = response.get("body")
+        print(f"sync_invoke_model_stream stream \n {stream}")
+
+        # Return an async generator for the streaming response
+        stream = response.get('body')
+        if stream:
+            for event in stream:
+                chunk = event.get('chunk')
+                if chunk:
+                    message = json.loads(chunk.get("bytes").decode())
+                    if message['type'] == "content_block_delta":
+                        yield message['delta']['text'] or ""
+                    elif message['type'] == "message_stop":
+                        yield "\n"
+
                    

@@ -2,39 +2,22 @@ import asyncio
 import boto3
 import json
 import pandas as pd
+from common.llm_prompts import LLMPrompts, AsyncBedrockLLMHandler
 
-class AsyncBedrockLLMHandler:
-    def __init__(self, config):
+
+
+class AsyncModelResponse(AsyncBedrockLLMHandler):
+    def __init__(self,bedrock_runtime, config):
         """
         Initialize the class with configuration.
         :param config: Dictionary containing models and other configurations.
         """
+        super().__init__(bedrock_runtime, config)
         self.config = config
-        self.bedrock_client = boto3.client("bedrock-runtime")  # Synchronous boto3 client
+        self.bedrock_runtime = bedrock_runtime
 
-    async def invoke_bedrock_stream(self, model_id, body):
-        """
-        Asynchronously invoke the Bedrock model in streaming mode.
-        :param model_id: ID of the model to invoke.
-        :param body: Payload to send to the Bedrock API.
-        :return: Async generator yielding responses.
-        """
-        def sync_invoke_model_stream():
-            return self.bedrock_client.invoke_model_with_response_stream(
-                modelId=model_id,
-                contentType="application/json",
-                body=body
-            )
 
-        response = await asyncio.to_thread(sync_invoke_model_stream)
-        stream = response.get("body")
-
-        # Return an async generator for the streaming response
-        async for line in stream.iter_lines():
-            if line:
-                yield json.loads(line.decode("utf-8"))
-
-    async def process_doc_question_stream(self, accumulated_text_chunks, accumulated_image_chunks, model_id, question_type):
+    async def process_doc_question_stream(self, accumulated_text_chunks, accumulated_image_chunks, model_id, question):
         """
         Process document questions and return results in streaming mode.
         :param accumulated_text_chunks: Text chunks for context.
@@ -60,32 +43,103 @@ class AsyncBedrockLLMHandler:
                     if item['chunk_number'] == chunk_number
                 )
                 images_df = pd.DataFrame(accumulated_images_for_chunk)
-                doc_images = images_df.to_dict(orient="records")
+                print(f"images_df columns {images_df.columns}")
+                if images_df.shape[0] > 0:
+                    print(f"images_df columns {images_df.columns}")
+                    context = context + str(images_df[['image_filename']].to_dict('records'))
+                    doc_images = images_df[['type', 'source']].to_dict('records') 
+                else:
+                    doc_images = images_df.to_dict('records')
             else:
                 doc_images = []
+            print(f"ize of doc_images {len(doc_images)}")
+
+            return_image_format = """text_response_ended@[{"image_number": image_number, "image_path": "image path",
+            "image_description": "description", "image_summary": "summary", "image_data": "base64 image data"}]"""
 
             # Construct the input for the LLM
-            input_text = f"""
-                Answer the question from the user {question_type} using the following context: {context}.
-                If the context contains images, provide the image details as a JSON list.
-            """
 
-            message = {
-                "role": "user",
-                "content": [
-                    *doc_images,
+            input_text = f"""
+                        0.  Answer the question from the user {question} .\
+                        1. Be consize and precise. Maximum 9 paragraphs are enough.\
+                        2. To answer the user's question, Use the folowing context to answer {context}.\
+                        Pay atention to text in document first, and then images.
+                        3. If The context contains images, then the image path is included.\
+                        image path is included in this format 'image_path': './extracted_images/page_4_block_2.png'\
+                        4. if images/diagrams are included in context, please retun image number starting with 0 and image path which help answer the question in JSON format.\
+                            to get the image path corect, correlate image number you recieve with image path .
+                        5. when returning JSON of image paths, include description and sumary of image. return using format {return_image_format}\
+                            Please return a valid json .
+                        6. if the context contains images/diagrams,Include JSON with image paths after answerring the question.\
+                        7. Answer the question first and then return {return_image_format}\
+                        8. only include text_response_ended@ once. after text_response_ended@ return all images/diagram in {return_image_format}, \
+                            do not include double quotes in your answer.
+                        9. IN {return_image_format} FOR "image_data" key should be the image base64 data.\
+                        9.If you do not know the anser, say I do not know\
+                        """
+
+
+            message = {"role": "user",
+                 "content": [
+                     *doc_images,
                     {"type": "text", "text": input_text}
-                ]
-            }
+                    ]}
+        
 
             body = json.dumps({
-                "messages": [message],
-                "maxTokens": max_tokens,
-                "temperature": self.config['models']['temperature']
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": max_tokens,
+                "temperature": 0.0,
+                "top_k": 250, 
+                "top_p": 1, 
+                "messages": [message]
             })
 
             # Stream the responses
             async for response_part in self.invoke_bedrock_stream(model_id, body):
+
                 yield response_part
+
+
+
+    async def process_text_question_stream(self, context, model_id, question):
+        """
+        Process document questions and return results in streaming mode.
+        :param accumulated_text_chunks: Text chunks for context.
+        :param accumulated_image_chunks: Image chunks associated with the text.
+        :param model_id: Bedrock model ID.
+        :param question_type: Type of question.
+        :return: Async generator for streaming responses.
+        """
+        max_tokens = self.config['models']['max_tokens']
+
+        # Construct the input for the LLM
+
+        input_text = f"""
+                    0.  Answer the question from the user {question} .\
+                    1. Be consize and precise. Maximum 9 paragraphs are enough.\
+                    2. To answer the user's question, Use the folowing context to answer {context}.\
+                    Pay atention to text in document first, and then images.
+                    3. If you do not know the anser, say I do not know\
+                    """
+
+        message = {"role": "user",
+                "content": [
+                {"type": "text", "text": input_text}
+                ]}
+    
+
+        body = json.dumps({
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": max_tokens,
+            "temperature": 0.0,
+            "top_k": 250, 
+            "top_p": 1, 
+            "messages": [message]
+        })
+
+        # Stream the responses
+        async for response_part in self.invoke_bedrock_stream(model_id, body):
+            yield response_part
 
 
