@@ -31,7 +31,7 @@ class ProcessEvent():
 
     @property
     def user_id(self):
-        return self.headers.get('userId', {})
+        return self.headers.get('userid', {})
         
     @user_id.setter
     def user_id(self, value):

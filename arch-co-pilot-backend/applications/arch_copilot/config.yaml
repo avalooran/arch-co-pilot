@@ -13,7 +13,11 @@ output_details:
     output_key: "output_files"
 
 chunk_dtls:
-    chunk_size: 6
+    chunk_size: 15
     chunk_overlap_percent: 10
+
+
+session_details:
+   session_length: 5
 
 

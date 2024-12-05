@@ -28,14 +28,14 @@ search_embedd_table:
 session_memory_table:
     name: 'session_memory'
     df_cols: ['user_id', 'session_id', 'user_question', 'llm_response', 'response_images', 'response_doc_links', 'question_embedding']
-    tbl_cols: ['user_id', 'session_id', 'user_question', 'llm_response', 'response_images', 'response_doc_links', 'session_timestamp', 'session_date', 'question_embedding']
+    tbl_cols: ['user_id', 'session_id', 'user_question', 'llm_response', 'llm_response_sumarization','response_images', 'response_doc_links', 'session_timestamp', 'session_date', 'question_embedding']
 
 
 session_details:
    session_length: 10
 
 rag_response_hist_table:
-    name: 'rag_question_response_history '
+    name: 'rag_question_response_history'
     
 models:
     main_model: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'

@@ -214,7 +214,7 @@ class PGVectorInterface():
         for col, value in row.items():
             pg_type = self.get_column_data_type(pg_schema_df,col)
             rds_mapping = pg_to_rds_data_api_map.get(pg_type, {"type": "stringValue"})
-            if pg_type == 'USER-DEFINED':
+            if pg_type == 'USER-DEFINED' or pg_type == 'decimal' or pg_type == 'numeric':
                 value = str(value)
             if value == None:
                 field_data = {"name": col, "value": {"isNull": True}}
@@ -253,6 +253,6 @@ class PGVectorInterface():
             values_columns = values_columns + ",:" + table_columns[-1]
         def_columns = f"""{str(table_columns).replace("[","").replace("]","").replace("'","")} """
         insert_stmnt = f"insert into {table_name} ({def_columns}) values ({values_columns})"
-        print(f"format_insert_stmnt -> {insert_stmnt}")
+
         return insert_stmnt
      

@@ -27,21 +27,13 @@ s3_c = boto3.client('s3')
 bedrock_runtime = boto3.client(service_name='bedrock-runtime')
 rds_client = boto3.client('rds-data')
 
-sesn_memory = SessionMemory(bedrock_runtime, rds_client, config)
-
-global response_memory_df
-
-response_memory_df = sesn_memory.session_memory_df
-
-print(f"response_memory_df init1 {response_memory_df.shape}") 
 
 def lambda_handler(event, context):
-    global response_memory_df
     print(f'event --> {event}')
       
     #validate event, Parse body, headers
     #proc_event = ProcessEvent(config, event)
-    proc_request = AsyncProcessRequest(bedrock_runtime, rds_client, s3_c, config, event, response_memory_df)
+    proc_request = AsyncProcessRequest(bedrock_runtime, rds_client, s3_c, config, event)
     answer = proc_request.process_request()
     
 
@@ -60,7 +52,7 @@ async def stream_response(event):
     Endpoint to stream Bedrock responses.
     """
 
-    async_proc_request = AsyncProcessRequest(bedrock_runtime, rds_client, s3_c, config, event, response_memory_df)
+    async_proc_request = AsyncProcessRequest(bedrock_runtime, rds_client, s3_c, config, event)
     print("AsyncProcessRequest initialized ")
 
     async def response_generator():
@@ -77,6 +69,11 @@ async def stream_response(event):
 event = {"headers": {"conversationtopic": "abc", "eventdatetime": "abc", "sessionid": "abc", "userid": "abc"}, 
           "body": '{"userQuestion": "What is Data Mesh?", \
           "addHocDocumentPath": "s3://arch-copilot-files-store/input_files/Data_Mesh_Architecture_latest.pdf"}'}
+
+ 
+event = {"headers": {"conversationtopic": "abc", "eventdatetime": "abc", "sessionid": "abc", "userid": "abc"}, 
+          "body": '{"userQuestion": "how can Cluster Linking be used ? How can it be used for disaster recovery?"}'}
+
 context = ''
 
 #lambda_handler(event, context)

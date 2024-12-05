@@ -52,16 +52,7 @@ class DocPGVector(PGVectorInterface):
         if not isinstance(value, list):
             raise ValueError("Name must be a list")
         self.embedding_tables = value
-
-    @property
-    def rag_response_hist_table(self):
-        return  self.config['rag_response_hist_table']['name']
         
-    @rag_response_hist_table.setter
-    def rag_response_hist_table(self, value):
-        if not isinstance(value, str):
-            raise ValueError("Name must be a string")
-        self.rag_response_hist_table = value
 
     def get_doc_cosine_topn_similar_records(self, top_n, similarity_vector, min_threshold=0.6):
         sql_stmnt = f"""select topn_srch.document_id,topn_srch.chunk_number,topn_srch.embedding_type,
