@@ -47,18 +47,17 @@ class AsyncProcessRequest(ProcessEvent):
                     self.response_memory_df = pd.DataFrame(response_memory)
                     print(f"response_memory_df handler 1 {self.response_memory_df.shape[0]}") 
                     if self.response_memory_df.shape[0] > 0:
-                        answer = self.response_user_memory_df[['llm_response', 'response_images']].to_dict('records') 
+                        answer = self.response_memory_df[['llm_response', 'response_images']].to_dict('records') 
+                    
+                        yield answer[0]['llm_response']
+                        yield answer[0]['response_images']
                 else:
                     run_answer = True
                 
             if run_answer: 
                 async for response_part in self.execute_model_response_stream():
                     yield response_part
-                # Update session memory
-                #self.response_memory_entry = pd.DataFrame([{"answer": answer,"session_id": self.session_id,"user_question": self.user_question}])
-                #self.response_memory_df = pd.concat([response_memory_entry, self.response_memory_df]).reset_index(drop=True)
-            #print(f"answer is \n {answer}")
-            #print(f"response_memory_df handler 2 {self.response_memory_df.shape[0]}") 
+
         except ClientError as e:
             yield self.format_response(400, str(e))
             return
@@ -74,7 +73,7 @@ class AsyncProcessRequest(ProcessEvent):
         answer = ''
         accumulated_text_chunks = [{'chunk_number': 0, 'accumulated_text': ''} ,{'chunk_number': 0, 'accumulated_text': ''}]
         accumulated_image_chunks = {}
-        accumulated_text_chunks, accumulated_image_chunks, contexts_size = self.prepare_chunks()
+        accumulated_text_chunks, accumulated_image_chunks, accumulated_document_source_links, contexts_size, embed_question_vector = self.prepare_chunks()
 
         model_id = self.primary_model
 
@@ -93,6 +92,24 @@ class AsyncProcessRequest(ProcessEvent):
                     answer = answer + ''.join(response_part)
                     yield response_part
                 yield accumulated_image_chunk
+                # add session memory
+                session_memory = {}
+                session_memory['user_id'] = self.user_id
+                session_memory['session_id'] = self.session_id
+                session_memory['user_question'] = self.user_question
+                session_memory['llm_response'] = answer
+                session_memory['llm_response_sumarization'] = self.session_memory.summarize_response(answer)
+                session_memory['response_images'] = str(accumulated_image_chunk)
+                session_memory['response_doc_links'] = str(accumulated_document_source_links)
+                session_memory['session_timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+                session_memory['session_date'] = datetime.now().strftime("%Y-%m-%d")
+                session_memory['question_embedding'] = str(embed_question_vector)
+                session_memory_df = pd.DataFrame(session_memory, index=[0])
+                columns = self.doc_pgvctr.get_table_column_names(self.session_memory.session_memory_table)
+                session_memory_df = session_memory_df[columns]
+                sql_parameter_sets = self.doc_pgvctr.format_records(session_memory_df, self.session_memory.session_memory_table)
+                insrt_stmnt = self.doc_pgvctr.format_insert_stmnt(self.session_memory.session_memory_table, columns, vector_column='question_embedding') 
+                records = self.doc_pgvctr.batch_execute_statement(insrt_stmnt, sql_parameter_sets)
             else:
                 pass
         
@@ -109,17 +126,20 @@ class AsyncProcessRequest(ProcessEvent):
             page_details, accumulated_chunks, self.doc_text  = self.pdf_parser_inst.process_pdf_pages()
             
             contexts_size = 0
+            embed_question_vector = ''
+            accumulated_document_source_links = ''
         else:
             print(f"caling get_question_context")
             accumulated_image_chunks = {}
-            accumulated_chunks, contexts_size = self.get_question_context()
+            accumulated_chunks, contexts_size, embed_question_vector = self.get_question_context()
             print(f"contexts_size is -> {contexts_size}")
 
         accumulated_chunks_df = pd.DataFrame(accumulated_chunks)
+        accumulated_document_source_links = accumulated_chunks_df[['document_source_links']].to_dict('records') 
         accumulated_text_chunks = accumulated_chunks_df[['chunk_number','accumulated_text']].to_dict('records') 
         accumulated_image_chunks = accumulated_chunks_df[['chunk_number','accumulated_images']].to_dict('records') 
 
-        return accumulated_text_chunks, accumulated_image_chunks, contexts_size
+        return accumulated_text_chunks, accumulated_image_chunks, accumulated_document_source_links, contexts_size, embed_question_vector
 
 
     def get_question_context(self):
@@ -171,4 +191,4 @@ class AsyncProcessRequest(ProcessEvent):
         else:
             accumulated_chunks = [{'chunk_number': 0, 'accumulated_text': '', 'accumulated_images': {}}]
 
-        return accumulated_chunks, contexts_size
+        return accumulated_chunks, contexts_size, embed_question_vector
