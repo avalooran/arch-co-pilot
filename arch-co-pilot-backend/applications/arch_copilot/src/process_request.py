@@ -53,7 +53,6 @@ class AsyncProcessRequest(ProcessEvent):
                 
             if run_answer: 
                 async for response_part in self.execute_model_response_stream():
-                    answer = answer + ''.join(response_part)
                     yield response_part
                 # Update session memory
                 #self.response_memory_entry = pd.DataFrame([{"answer": answer,"session_id": self.session_id,"user_question": self.user_question}])
@@ -87,10 +86,13 @@ class AsyncProcessRequest(ProcessEvent):
         else:
             session_memory_df = self.session_memory.get_user_session_memory(self.user_id, self.session_id)
             if contexts_size > 0:
-                async for response_part in self.async_model_response.process_user_question_stream(accumulated_text_chunks, 
-                accumulated_image_chunks, session_memory_df, model_id, self.user_question):
+                accumulated_text_chunk = accumulated_text_chunks[0]['accumulated_text']
+                accumulated_image_chunk = accumulated_image_chunks[0]['accumulated_images']
+                async for response_part in self.async_model_response.process_user_question_stream(accumulated_text_chunk, 
+                accumulated_image_chunk, session_memory_df, model_id, self.user_question):
                     answer = answer + ''.join(response_part)
                     yield response_part
+                yield accumulated_image_chunk
             else:
                 pass
         
@@ -155,15 +157,15 @@ class AsyncProcessRequest(ProcessEvent):
             accumulated_chunks_df['chunk_number'] = 1
 
             accumulated_chunks_df = accumulated_chunks_df[['chunk_number', 'image_description', 'image_base64', 'document_source_link']] 
-            accumulated_chunks_df['image_base64'] = 'image_base64'
             accumulated_chunks_df = accumulated_chunks_df.groupby("chunk_number").apply(
                                             lambda group: pd.Series({
                                             "accumulated_text": " ".join(group["image_description"]),  # Concatenate descriptions
                                             "document_source_links": list(group["document_source_link"].unique()),  # Unique links
                                             "accumulated_images": [
                                                 {"type": "image","source": {"type": "base64", "media_type": "image/jpeg","data": row["image_base64"]}
-                                                } for _, row in group.iterrows()], 
+                                                } for _, row in group.iterrows() if row["image_base64"] is not None], 
                                         })).reset_index()
+    
             accumulated_chunks = accumulated_chunks_df.to_dict('records') 
 
         else:

@@ -143,7 +143,7 @@ class AsyncModelResponse(AsyncBedrockLLMHandler):
             yield response_part
 
 
-    async def process_user_question_stream(self, accumulated_text_chunk, accumulated_image_chunk, session_memory_df, model_id, question):
+    async def process_user_question_stream(self, context, doc_images, session_memory_df, model_id, question):
         """
         Process document questions and return results in streaming mode.
         :param accumulated_text_chunks: Text chunks for context.
@@ -154,21 +154,25 @@ class AsyncModelResponse(AsyncBedrockLLMHandler):
         """
         max_tokens = self.config['models']['max_tokens']
 
-        context = accumulated_text_chunk
-        doc_images = accumulated_image_chunk
 
         print(f"ize of doc_images {len(doc_images)}")
+        print(f" doc_images {doc_images[0].keys()}")
+        print(f"context \n {context}")
         # Construct the input for the LLM
-        session_memory = session_memory_df[["user_question","llm_response_sumarization"]].to_dict('records')
-        sesion_memory_format = """[{"user_question": "user_question","llm_response_sumarization": "llm_response_sumarization"}]"""
+        if len(session_memory_df) == 0:
+            memory_instructions = ''
+        else:
+            session_memory = session_memory_df[["user_question","llm_response_sumarization"]].to_dict('records')
+            memory_instructions = """3. Please take into consideration the conversation history {sesion_memory}\
+                    4. The conversation history is in JSON format {sesion_memory_format}"""
+            sesion_memory_format = """[{"user_question": "user_question","llm_response_sumarization": "llm_response_sumarization"}]"""
 
         input_text = f"""
                     0.  Answer the question from the user {question} .\
                     1. Be consize and precise. Maximum 9 paragraphs are enough.\
                     2. To answer the user's question, Use the folowing context to answer {context}.\
                     Pay atention to text in document first, and then images.
-                    3. Please take into consideration the conversation history {sesion_memory}\
-                    4. The conversation history is in JSON format {sesion_memory_format}
+                    {memory_instructions}
                     5. If you do not know the anser, say I do not know\
                     """
 
@@ -190,5 +194,4 @@ class AsyncModelResponse(AsyncBedrockLLMHandler):
 
         # Stream the responses
         async for response_part in self.invoke_bedrock_stream(model_id, body):
-
             yield response_part
